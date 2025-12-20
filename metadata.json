@@ -1,0 +1,7 @@
+{
+  "name": "ATS Optimizer Chrome Extension ",
+  "description": "A sophisticated resume optimizer that analyzes job descriptions against resumes to calculate ATS scores and generate tailored, high-performance resumes with a visual diff comparison.",
+  "requestFramePermissions": [
+    "camera"
+  ]
+}
