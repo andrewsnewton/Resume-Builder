@@ -1,6 +1,11 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import { viteStaticCopy } from 'vite-plugin-static-copy';
+import { resolve, dirname } from 'path';
+import { fileURLToPath } from 'url';
+
+// Fix for __dirname in ESM
+const __dirname = dirname(fileURLToPath(import.meta.url));
 
 export default defineConfig({
   plugins: [
@@ -24,8 +29,6 @@ export default defineConfig({
     })
   ],
   define: {
-    // Safely inject the API key. 
-    // Note: In local dev, make sure to set VITE_API_KEY or use the CLI method provided previously.
     'process.env.API_KEY': JSON.stringify(process.env.API_KEY || '')
   },
   build: {
@@ -33,14 +36,16 @@ export default defineConfig({
     emptyOutDir: true,
     rollupOptions: {
       input: {
-        main: 'index.html'
+        // Correcting use of resolve with defined __dirname
+        main: resolve(__dirname, 'index.html'),
+        background: resolve(__dirname, 'background.ts')
       },
       output: {
-        // Extensions often prefer non-hashed filenames for simplicity, 
-        // though hashing is usually fine for side panels.
-        entryFileNames: `assets/[name].js`,
-        chunkFileNames: `assets/[name].js`,
-        assetFileNames: `assets/[name].[ext]`
+        entryFileNames: (chunkInfo) => {
+          return chunkInfo.name === 'background' ? '[name].js' : 'assets/[name]-[hash].js';
+        },
+        chunkFileNames: `assets/[name]-[hash].js`,
+        assetFileNames: `assets/[name]-[hash].[ext]`
       }
     }
   }

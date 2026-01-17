@@ -4,12 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ATS Optimizer</title>
-    <!-- Tailwind is processed by Vite/PostCSS in a standard build, 
-         but we include base styles here to ensure the UI works if 
-         the user doesn't have a full Tailwind setup. -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        /* Essential base styles to replace the CDN version for the Extension context */
         body {
             font-family: 'Inter', sans-serif;
             background-color: #f8fafc;
@@ -38,25 +34,26 @@
 <script type="importmap">
 {
   "imports": {
+    "react/": "https://esm.sh/react@^19.2.3/",
     "react": "https://esm.sh/react@^19.2.3",
     "react-dom/": "https://esm.sh/react-dom@^19.2.3/",
-    "react/": "https://esm.sh/react@^19.2.3/",
     "@google/genai": "https://esm.sh/@google/genai@^1.37.0",
     "lucide-react": "https://esm.sh/lucide-react@^0.562.0",
-    "mammoth": "https://esm.sh/mammoth@^1.11.0",
-    "diff": "https://esm.sh/diff@^8.0.3",
-    "docx": "https://esm.sh/docx@^9.5.1",
-    "jspdf": "https://esm.sh/jspdf@^4.0.0",
     "vite": "https://esm.sh/vite@^7.3.1",
     "@vitejs/plugin-react": "https://esm.sh/@vitejs/plugin-react@^5.1.2",
-    "vite-plugin-static-copy": "https://esm.sh/vite-plugin-static-copy@^3.1.4"
+    "docx": "https://esm.sh/docx@^9.5.1",
+    "path": "https://esm.sh/path@^0.12.7",
+    "url": "https://esm.sh/url@^0.11.4",
+    "jspdf": "https://esm.sh/jspdf@^4.0.0",
+    "mammoth": "https://esm.sh/mammoth@^1.11.0",
+    "vite-plugin-static-copy": "https://esm.sh/vite-plugin-static-copy@^3.1.4",
+    "diff": "https://esm.sh/diff@^8.0.3"
   }
 }
 </script>
 </head>
 <body>
     <div id="root"></div>
-    <!-- Use relative path for Vite bundling -->
     <script type="module" src="./index.tsx"></script>
 </body>
 </html>

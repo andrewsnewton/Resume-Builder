@@ -1,4 +1,3 @@
-
 {
   "manifest_version": 3,
   "name": "ATS Resume Optimizer",
@@ -18,15 +17,13 @@
   "action": {
     "default_title": "Open ATS Optimizer"
   },
+  "background": {
+    "service_worker": "background.js",
+    "type": "module"
+  },
   "icons": {
     "16": "icon.png",
     "48": "icon.png",
     "128": "icon.png"
-  },
-  "web_accessible_resources": [
-    {
-      "resources": ["*.png", "*.svg"],
-      "matches": ["<all_urls>"]
-    }
-  ]
+  }
 }
