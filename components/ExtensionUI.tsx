@@ -1,9 +1,9 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { 
   Upload, Zap, Download, RefreshCcw, 
-  Target, Copy, ClipboardPaste, UserCircle, 
-  ArrowRight, AlertCircle, FileText, Trash2,
-  ChevronRight, CheckCircle2, Layout, FileEdit, BarChart3
+  Target, Copy, UserCircle, 
+  ChevronRight, CheckCircle2, Layout, FileEdit, BarChart3,
+  Trash2, AlertCircle, Sparkles, FileText
 } from 'lucide-react';
 // @ts-ignore
 import mammoth from 'mammoth';
@@ -138,25 +138,28 @@ const ExtensionUI: React.FC = () => {
   };
 
   return (
-    <div className="h-full flex flex-col bg-slate-50 relative overflow-hidden text-slate-900">
+    <div className="h-full flex flex-col bg-[#f8fafc] relative overflow-hidden text-slate-900 font-sans">
       {/* Dynamic Header */}
       <header className="glass sticky top-0 z-50 px-6 py-4 flex justify-between items-center border-b border-slate-200/60 shadow-sm">
         <div className="flex items-center gap-3">
-          <div className="w-9 h-9 bg-indigo-600 rounded-xl flex items-center justify-center shadow-indigo-200 shadow-lg">
+          <div className="w-10 h-10 bg-gradient-to-br from-indigo-600 to-violet-600 rounded-2xl flex items-center justify-center shadow-lg shadow-indigo-200/50">
             <Zap className="w-5 h-5 text-white fill-white/20" />
           </div>
           <div>
-            <h1 className="text-sm font-extrabold tracking-tight text-slate-900 m-0 leading-tight">CareerAgent</h1>
-            <p className="text-[10px] font-bold text-indigo-600 uppercase tracking-widest m-0 leading-tight">ATS Intelligence</p>
+            <h1 className="text-base font-extrabold tracking-tight text-slate-900 m-0 leading-tight">CareerAgent</h1>
+            <div className="flex items-center gap-1.5">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]"></span>
+              <p className="text-[10px] font-bold text-indigo-600 uppercase tracking-widest m-0 leading-tight">ATS Logic Active</p>
+            </div>
           </div>
         </div>
         {parsedMasterResume && (
           <button 
             onClick={() => setAppState(AppState.PROFILE)} 
-            className="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center hover:bg-indigo-50 hover:text-indigo-600 transition-all active:scale-90"
+            className="w-10 h-10 rounded-2xl bg-white border border-slate-200 flex items-center justify-center hover:bg-indigo-50 hover:text-indigo-600 transition-all active:scale-90 shadow-sm"
             title="My Profile"
           >
-            <UserCircle className="w-5 h-5" />
+            <UserCircle className="w-6 h-6" />
           </button>
         )}
       </header>
@@ -164,74 +167,102 @@ const ExtensionUI: React.FC = () => {
       <div className="flex-1 overflow-y-auto custom-scrollbar p-6">
         {/* Setup Phase */}
         {appState === AppState.SETUP && (
-          <div className="space-y-8 mt-4 animate-slide-up">
-            <div className="space-y-2">
-              <h2 className="text-2xl font-extrabold tracking-tight text-slate-900">Let's get you hired.</h2>
-              <p className="text-sm text-slate-500 font-medium">Upload your base resume to start tailoring for roles instantly.</p>
+          <div className="space-y-10 mt-4 animate-slide-up">
+            <div className="space-y-3">
+              <h2 className="text-3xl font-extrabold tracking-tight text-slate-900 leading-[1.15]">
+                Tailor your <br/><span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-violet-600">future in seconds.</span>
+              </h2>
+              <p className="text-[13px] text-slate-500 font-medium max-w-[280px]">Upload your master resume once, and we'll optimize it for every job you see.</p>
             </div>
             
             <div className="relative group">
               <input type="file" id="resume-up" className="hidden" onChange={handleFileUpload} accept=".pdf,.docx,.txt" />
               <label htmlFor="resume-up" className="block cursor-pointer">
-                <div className="border-2 border-dashed border-slate-200 rounded-[2.5rem] p-12 bg-white text-center hover:border-indigo-500 hover:bg-indigo-50/30 transition-all duration-300 shadow-premium group-active:scale-[0.98]">
-                  <div className="w-16 h-16 bg-indigo-50 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:rotate-6 transition-transform">
-                    <Upload className="w-8 h-8 text-indigo-600" />
+                <div className="border-2 border-dashed border-slate-200 rounded-[2.5rem] p-12 bg-white text-center hover:border-indigo-500 hover:bg-indigo-50/20 transition-all duration-300 shadow-premium group-active:scale-[0.98]">
+                  <div className="w-20 h-20 bg-gradient-to-br from-indigo-50 to-violet-50 rounded-3xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 group-hover:rotate-3 transition-all duration-300 shadow-inner">
+                    <Upload className="w-9 h-9 text-indigo-600" />
                   </div>
-                  <h3 className="text-base font-bold text-slate-800">Choose your resume</h3>
-                  <p className="text-xs text-slate-400 font-medium mt-1">PDF, Word, or Text (Max 5MB)</p>
+                  <h3 className="text-lg font-bold text-slate-800">Select Resume</h3>
+                  <p className="text-xs text-slate-400 font-medium mt-1.5">PDF, Word, or Text (Max 5MB)</p>
                 </div>
               </label>
             </div>
 
             {isProcessing && (
-              <div className="flex items-center justify-center gap-3 py-4 text-indigo-600 animate-pulse">
-                <RefreshCcw className="w-5 h-5 animate-spin" />
-                <span className="text-xs font-bold uppercase tracking-widest">Parsing Intelligence...</span>
+              <div className="flex flex-col items-center justify-center gap-4 py-6 bg-indigo-50/50 rounded-3xl border border-indigo-100/50 animate-pulse">
+                <RefreshCcw className="w-6 h-6 text-indigo-600 animate-spin" />
+                <span className="text-[11px] font-bold text-indigo-600 uppercase tracking-[0.15em]">Parsing Resume Intelligence...</span>
               </div>
             )}
-            {error && <div className="p-4 bg-red-50 border border-red-100 rounded-2xl text-[11px] text-red-600 font-bold flex items-center gap-3"><AlertCircle className="w-4 h-4" /> {error}</div>}
+            {error && (
+              <div className="p-5 bg-red-50 border border-red-100 rounded-[2rem] text-[12px] text-red-600 font-bold flex items-center gap-4 shadow-sm">
+                <div className="w-8 h-8 rounded-xl bg-red-100 flex items-center justify-center shrink-0">
+                  <AlertCircle className="w-5 h-5" />
+                </div>
+                {error}
+              </div>
+            )}
           </div>
         )}
 
         {/* Profile Dashboard */}
         {appState === AppState.PROFILE && parsedMasterResume && (
           <div className="space-y-8 mt-2 animate-slide-up">
-            <div className="bg-white rounded-[2rem] p-8 shadow-premium border border-slate-100 text-center space-y-6">
-              <div className="relative inline-block">
-                <div className="w-24 h-24 bg-gradient-to-tr from-indigo-600 to-violet-500 rounded-3xl flex items-center justify-center mx-auto shadow-xl shadow-indigo-100 rotate-3">
-                  <UserCircle className="w-12 h-12 text-white" />
-                </div>
-                <div className="absolute -bottom-1 -right-1 w-8 h-8 bg-emerald-500 rounded-full border-4 border-white flex items-center justify-center">
-                  <CheckCircle2 className="w-4 h-4 text-white" />
-                </div>
-              </div>
+            <div className="bg-white rounded-[2.5rem] p-8 shadow-premium border border-slate-100 text-center space-y-8 relative overflow-hidden">
+              <div className="absolute top-0 left-0 w-full h-24 bg-gradient-to-br from-indigo-600/5 to-violet-600/5 pointer-events-none"></div>
               
-              <div>
-                <h3 className="text-xl font-extrabold text-slate-900 m-0">{parsedMasterResume.fullName}</h3>
-                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1">Master Profile Active</p>
+              <div className="relative z-10 space-y-6">
+                <div className="relative inline-block">
+                  <div className="w-28 h-28 bg-gradient-to-br from-indigo-600 to-violet-600 rounded-[2.5rem] flex items-center justify-center mx-auto shadow-2xl shadow-indigo-200 rotate-6 hover:rotate-0 transition-all duration-500">
+                    <UserCircle className="w-14 h-14 text-white" />
+                  </div>
+                  <div className="absolute -bottom-2 -right-2 w-10 h-10 bg-emerald-500 rounded-2xl border-4 border-white flex items-center justify-center shadow-lg">
+                    <CheckCircle2 className="w-5 h-5 text-white" />
+                  </div>
+                </div>
+                
+                <div>
+                  <h3 className="text-2xl font-extrabold text-slate-900 m-0 tracking-tight">{parsedMasterResume.fullName}</h3>
+                  <div className="inline-flex items-center gap-2 mt-2 px-3 py-1 bg-indigo-50 text-indigo-600 rounded-full text-[10px] font-bold uppercase tracking-widest border border-indigo-100">
+                    Master Profile Verified
+                  </div>
+                </div>
+
+                <div className="space-y-4">
+                  <button 
+                    onClick={handleScrapeAndOptimize}
+                    disabled={isProcessing}
+                    className="w-full py-5 bg-gradient-to-r from-indigo-600 to-violet-600 text-white rounded-2xl font-bold text-sm shadow-xl shadow-indigo-200/50 hover:shadow-indigo-300/50 hover:-translate-y-1 transition-all active:scale-95 disabled:opacity-50 btn-shine flex items-center justify-center gap-3"
+                  >
+                    {isProcessing ? (
+                      <RefreshCcw className="w-5 h-5 animate-spin" />
+                    ) : (
+                      <Sparkles className="w-5 h-5 fill-white/20" />
+                    )}
+                    {isProcessing ? 'Thinking...' : 'Match to Current Job'}
+                  </button>
+
+                  <button onClick={clearProfile} className="text-[11px] font-bold text-slate-400 uppercase tracking-widest hover:text-red-500 transition-colors flex items-center justify-center gap-2 mx-auto pt-2">
+                    <Trash2 className="w-4 h-4" /> Reset Master Data
+                  </button>
+                </div>
               </div>
-
-              <button 
-                onClick={handleScrapeAndOptimize}
-                disabled={isProcessing}
-                className="w-full py-5 bg-indigo-600 text-white rounded-2xl font-bold text-sm shadow-xl shadow-indigo-100 hover:bg-indigo-700 hover:-translate-y-1 transition-all active:scale-95 disabled:opacity-50 btn-shine"
-              >
-                {isProcessing ? 'Analyzing Page...' : 'Optimize for Current Page'}
-              </button>
-
-              <button onClick={clearProfile} className="text-[10px] font-bold text-slate-400 uppercase tracking-widest hover:text-red-500 transition-colors flex items-center justify-center gap-2 mx-auto">
-                <Trash2 className="w-3.5 h-3.5" /> Reset Base Resume
-              </button>
             </div>
 
             <div className="grid grid-cols-2 gap-4">
-              <div className="bg-slate-100/50 p-4 rounded-3xl border border-slate-200/50">
-                <span className="text-[9px] font-black uppercase text-slate-400">Skills</span>
-                <p className="text-xs font-bold mt-1 text-slate-700">{parsedMasterResume.skills?.length || 0} Identified</p>
+              <div className="bg-white p-5 rounded-[2rem] border border-slate-100 shadow-sm hover:border-indigo-200 transition-colors">
+                <div className="w-10 h-10 bg-indigo-50 rounded-xl flex items-center justify-center mb-4">
+                  <Sparkles className="w-5 h-5 text-indigo-600" />
+                </div>
+                <span className="text-[10px] font-black uppercase text-slate-400 tracking-wider">Skills Found</span>
+                <p className="text-lg font-extrabold mt-1 text-slate-900">{parsedMasterResume.skills?.length || 0}</p>
               </div>
-              <div className="bg-slate-100/50 p-4 rounded-3xl border border-slate-200/50">
-                <span className="text-[9px] font-black uppercase text-slate-400">Experience</span>
-                <p className="text-xs font-bold mt-1 text-slate-700">{parsedMasterResume.experience?.length || 0} Roles</p>
+              <div className="bg-white p-5 rounded-[2rem] border border-slate-100 shadow-sm hover:border-violet-200 transition-colors">
+                <div className="w-10 h-10 bg-violet-50 rounded-xl flex items-center justify-center mb-4">
+                  <BarChart3 className="w-5 h-5 text-violet-600" />
+                </div>
+                <span className="text-[10px] font-black uppercase text-slate-400 tracking-wider">Experience</span>
+                <p className="text-lg font-extrabold mt-1 text-slate-900">{parsedMasterResume.experience?.length || 0} Roles</p>
               </div>
             </div>
           </div>
@@ -240,40 +271,45 @@ const ExtensionUI: React.FC = () => {
         {/* Manual Input Fallback */}
         {appState === AppState.JOB_INPUT && (
           <div className="space-y-6 animate-slide-up">
-            <div className="bg-white rounded-[2rem] p-6 shadow-premium border border-slate-100 space-y-4">
-              <div className="flex items-center gap-3">
-                <div className="w-8 h-8 bg-amber-50 rounded-xl flex items-center justify-center">
-                  <Layout className="w-4 h-4 text-amber-600" />
+            <div className="bg-white rounded-[2.5rem] p-8 shadow-premium border border-slate-100 space-y-6">
+              <div className="flex items-center gap-4">
+                <div className="w-12 h-12 bg-amber-50 rounded-2xl flex items-center justify-center shrink-0">
+                  <Layout className="w-6 h-6 text-amber-600" />
                 </div>
-                <h4 className="text-sm font-extrabold m-0">Paste Job Details</h4>
+                <div>
+                  <h4 className="text-base font-extrabold m-0">Paste Job Details</h4>
+                  <p className="text-xs text-slate-400 font-medium">Automatic detection failed on this page.</p>
+                </div>
               </div>
               <textarea 
                 value={jobDescription}
                 onChange={e => setJobDescription(e.target.value)}
-                placeholder="Target Job Description..."
-                className="w-full h-64 p-5 text-xs font-medium border border-slate-100 rounded-2xl bg-slate-50 focus:ring-4 focus:ring-indigo-50 focus:bg-white focus:border-indigo-200 transition-all outline-none resize-none custom-scrollbar leading-relaxed"
+                placeholder="Paste the full job description here..."
+                className="w-full h-64 p-6 text-[13px] font-medium border border-slate-100 rounded-[2rem] bg-slate-50 focus:ring-4 focus:ring-indigo-100/50 focus:bg-white focus:border-indigo-200 transition-all outline-none resize-none custom-scrollbar leading-relaxed"
               />
             </div>
             <button 
               onClick={() => runOptimization(jobDescription)}
               disabled={!jobDescription.trim()}
-              className="w-full py-5 bg-indigo-600 text-white rounded-2xl font-bold text-sm shadow-xl hover:bg-indigo-700 transition-all flex items-center justify-center gap-3 disabled:bg-slate-200 active:scale-95"
+              className="w-full py-5 bg-gradient-to-r from-indigo-600 to-violet-600 text-white rounded-[2rem] font-bold text-sm shadow-xl shadow-indigo-100 hover:shadow-indigo-200 hover:-translate-y-0.5 transition-all flex items-center justify-center gap-3 disabled:bg-slate-200 active:scale-95"
             >
-              Start AI Optimization <ChevronRight className="w-4 h-4" />
+              Tailor My Resume <ChevronRight className="w-5 h-5" />
             </button>
           </div>
         )}
 
         {/* Optimizing State */}
         {appState === AppState.OPTIMIZING && (
-          <div className="py-24 text-center space-y-8 animate-slide-up">
+          <div className="py-24 text-center space-y-10 animate-slide-up">
             <div className="relative inline-block">
-              <div className="w-20 h-20 border-4 border-indigo-100 border-t-indigo-600 rounded-full animate-spin mx-auto shadow-inner"></div>
-              <Zap className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-8 h-8 text-indigo-600 animate-pulse" />
+              <div className="w-24 h-24 border-4 border-slate-100 border-t-indigo-600 rounded-full animate-spin mx-auto"></div>
+              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-14 h-14 bg-indigo-50 rounded-3xl flex items-center justify-center">
+                <Sparkles className="w-8 h-8 text-indigo-600 animate-pulse" />
+              </div>
             </div>
-            <div className="space-y-2">
-              <h3 className="text-lg font-extrabold text-slate-900 uppercase tracking-tight">AI Agent Working</h3>
-              <p className="text-xs text-slate-500 font-medium">Mapping keywords to your experience...</p>
+            <div className="space-y-3">
+              <h3 className="text-xl font-extrabold text-slate-900 tracking-tight">AI Agent Working</h3>
+              <p className="text-[13px] text-slate-500 font-medium px-10">Matching your experience to top job keywords for peak ATS performance.</p>
             </div>
           </div>
         )}
@@ -281,50 +317,59 @@ const ExtensionUI: React.FC = () => {
         {/* Result State */}
         {appState === AppState.COMPLETED && optimizationResult && editableResume && (
           <div className="space-y-6 animate-slide-up pb-32">
-            <div className="bg-gradient-to-br from-indigo-600 to-indigo-800 rounded-[2.5rem] p-8 text-white shadow-xl shadow-indigo-100 flex items-center justify-between">
-              <div>
-                <p className="text-[10px] font-black uppercase tracking-widest opacity-70">Estimated ATS Score</p>
-                <h2 className="text-4xl font-black m-0">{optimizationResult.optimizedScore}%</h2>
-                <div className="flex items-center gap-2 mt-2">
-                  <div className="px-2 py-0.5 bg-white/20 rounded-full text-[9px] font-bold">+{optimizationResult.optimizedScore - (optimizationResult.originalScore || 0)}% Improvement</div>
+            <div className="bg-gradient-to-br from-indigo-700 via-indigo-600 to-violet-700 rounded-[2.5rem] p-10 text-white shadow-2xl shadow-indigo-200 flex items-center justify-between relative overflow-hidden">
+              <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -translate-y-1/2 translate-x-1/2 blur-2xl"></div>
+              <div className="relative z-10">
+                <p className="text-[11px] font-black uppercase tracking-[0.2em] opacity-80 mb-2">Target Match Score</p>
+                <h2 className="text-5xl font-black m-0 tracking-tighter">{optimizationResult.optimizedScore}%</h2>
+                <div className="flex items-center gap-2 mt-4">
+                  <span className="px-3 py-1 bg-white/20 rounded-full text-[10px] font-bold border border-white/10">
+                    +{optimizationResult.optimizedScore - (optimizationResult.originalScore || 0)}% Boost
+                  </span>
                 </div>
               </div>
-              <div className="w-20 h-20 bg-white/10 rounded-full border-4 border-white/20 flex items-center justify-center text-xl font-black">
+              <div className="relative z-10 w-24 h-24 bg-white/10 rounded-[2.5rem] border-2 border-white/20 flex items-center justify-center text-3xl font-black shadow-inner">
                 A+
               </div>
             </div>
 
-            <nav className="flex bg-slate-100 p-1.5 rounded-2xl shadow-inner-soft">
+            <nav className="flex bg-white p-2 rounded-2xl shadow-sm border border-slate-200/50">
               {[
                 { id: 'resume', icon: FileEdit, label: 'Resume' },
                 { id: 'cover', icon: FileText, label: 'Letter' },
-                { id: 'diff', icon: BarChart3, label: 'Changes' }
+                { id: 'diff', icon: BarChart3, label: 'Gaps' }
               ].map(tab => (
                 <button 
                   key={tab.id} 
                   onClick={() => setActiveTab(tab.id as any)}
-                  className={`flex-1 py-3 flex items-center justify-center gap-2 text-[10px] font-bold uppercase rounded-xl transition-all ${activeTab === tab.id ? 'bg-white text-indigo-600 shadow-md' : 'text-slate-500 hover:text-indigo-600'}`}
+                  className={`flex-1 py-4 flex items-center justify-center gap-3 text-[11px] font-bold uppercase tracking-wider rounded-xl transition-all ${activeTab === tab.id ? 'bg-gradient-to-r from-indigo-600 to-indigo-700 text-white shadow-lg' : 'text-slate-500 hover:text-indigo-600 hover:bg-indigo-50/50'}`}
                 >
-                  <tab.icon className="w-3.5 h-3.5" /> {tab.label}
+                  <tab.icon className={`w-4 h-4 ${activeTab === tab.id ? 'text-white' : 'text-slate-400'}`} /> {tab.label}
                 </button>
               ))}
             </nav>
 
             {activeTab === 'resume' && (
-              <div className="bg-white p-6 rounded-[2rem] border border-slate-100 shadow-premium space-y-4">
-                <h4 className="text-[11px] font-black uppercase text-indigo-900 border-b pb-3 flex items-center gap-2">
-                  <CheckCircle2 className="w-4 h-4 text-emerald-500" /> Tailored Content Ready
-                </h4>
-                <div className="space-y-3">
-                  <div className="p-4 bg-slate-50 rounded-2xl border border-slate-100">
-                    <span className="text-[9px] font-black uppercase text-slate-400">Smart Summary</span>
-                    <p className="text-xs leading-relaxed text-slate-700 mt-2 font-medium">{editableResume.summary}</p>
+              <div className="bg-white p-8 rounded-[2.5rem] border border-slate-100 shadow-premium space-y-6">
+                <div className="flex items-center justify-between border-b border-slate-100 pb-5">
+                  <h4 className="text-sm font-extrabold text-slate-900 m-0 flex items-center gap-3">
+                    <CheckCircle2 className="w-5 h-5 text-emerald-500" /> Analysis Complete
+                  </h4>
+                  <span className="px-3 py-1 bg-emerald-50 text-emerald-600 rounded-full text-[10px] font-bold border border-emerald-100">Optimized</span>
+                </div>
+                
+                <div className="space-y-4">
+                  <div className="p-5 bg-slate-50 rounded-2xl border border-slate-100 hover:bg-white transition-colors">
+                    <span className="text-[10px] font-black uppercase text-slate-400 tracking-wider">Strategic Summary</span>
+                    <p className="text-[13px] leading-relaxed text-slate-700 mt-2.5 font-medium">{editableResume.summary}</p>
                   </div>
-                  <div className="p-4 bg-slate-50 rounded-2xl border border-slate-100">
-                    <span className="text-[9px] font-black uppercase text-slate-400">Added Keywords</span>
-                    <div className="flex flex-wrap gap-1.5 mt-2">
-                      {optimizationResult.analysis.keywordGaps.slice(0, 6).map((k, i) => (
-                        <span key={i} className="px-2 py-1 bg-indigo-50 text-indigo-600 rounded-lg text-[9px] font-bold border border-indigo-100">+{k}</span>
+                  <div className="p-5 bg-slate-50 rounded-2xl border border-slate-100 hover:bg-white transition-colors">
+                    <span className="text-[10px] font-black uppercase text-slate-400 tracking-wider">Injected Keywords</span>
+                    <div className="flex flex-wrap gap-2 mt-3">
+                      {optimizationResult.analysis.keywordGaps.slice(0, 8).map((k, i) => (
+                        <span key={i} className="px-3 py-1.5 bg-white text-indigo-600 rounded-xl text-[10px] font-bold border border-indigo-100 shadow-sm">
+                          {k}
+                        </span>
                       ))}
                     </div>
                   </div>
@@ -333,21 +378,29 @@ const ExtensionUI: React.FC = () => {
             )}
 
             {activeTab === 'cover' && (
-              <div className="bg-white p-8 rounded-[2.5rem] border border-slate-100 shadow-premium">
-                <div className="flex justify-between items-center mb-6">
-                  <h4 className="text-[11px] font-black uppercase text-indigo-900 m-0 tracking-widest">Cover Letter</h4>
-                  <button onClick={() => navigator.clipboard.writeText(optimizationResult.coverLetter)} className="p-2.5 rounded-xl bg-indigo-50 text-indigo-600 hover:bg-indigo-100 active:scale-90 transition-all">
-                    <Copy className="w-4 h-4" />
+              <div className="bg-white p-10 rounded-[2.5rem] border border-slate-100 shadow-premium">
+                <div className="flex justify-between items-center mb-8">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 bg-indigo-50 rounded-xl flex items-center justify-center">
+                       <FileText className="w-5 h-5 text-indigo-600" />
+                    </div>
+                    <h4 className="text-sm font-extrabold text-slate-900 m-0">Cover Letter</h4>
+                  </div>
+                  <button onClick={() => navigator.clipboard.writeText(optimizationResult.coverLetter)} className="p-3 rounded-2xl bg-indigo-50 text-indigo-600 hover:bg-indigo-100 active:scale-90 transition-all shadow-sm">
+                    <Copy className="w-5 h-5" />
                   </button>
                 </div>
-                <div className="text-[11px] leading-relaxed whitespace-pre-wrap font-medium text-slate-600 bg-slate-50/50 p-6 rounded-3xl border border-slate-100">
+                <div className="text-[13px] leading-[1.7] whitespace-pre-wrap font-medium text-slate-600 bg-slate-50/50 p-8 rounded-[2rem] border border-slate-100 border-dashed">
                   {optimizationResult.coverLetter}
                 </div>
               </div>
             )}
 
             {activeTab === 'diff' && (
-              <div className="h-[500px] flex flex-col animate-slide-up">
+              <div className="h-[550px] flex flex-col animate-slide-up">
+                <div className="bg-slate-900 p-4 rounded-t-[2.5rem] border-b border-white/10">
+                   <p className="text-[10px] font-bold text-white/50 uppercase tracking-widest px-2">Diff Comparison Mode</p>
+                </div>
                 <DiffView original={masterResumeRaw} optimized={JSON.stringify(editableResume, null, 2)} />
               </div>
             )}
@@ -357,9 +410,12 @@ const ExtensionUI: React.FC = () => {
 
       {/* Persistent Footer Actions */}
       {appState === AppState.COMPLETED && (
-        <div className="absolute bottom-0 left-0 right-0 p-6 bg-white/80 backdrop-blur-xl border-t border-slate-200/60 flex gap-4 z-50">
-           <button onClick={() => setAppState(AppState.PROFILE)} className="w-14 h-14 bg-slate-100 text-slate-600 rounded-2xl flex items-center justify-center hover:bg-slate-200 transition-all active:scale-95">
-              <RefreshCcw className="w-5 h-5" />
+        <div className="absolute bottom-0 left-0 right-0 p-8 bg-white/90 backdrop-blur-2xl border-t border-slate-200/50 flex gap-4 z-50">
+           <button 
+             onClick={() => setAppState(AppState.PROFILE)} 
+             className="w-16 h-16 bg-white border border-slate-200 text-slate-500 rounded-[1.5rem] flex items-center justify-center hover:bg-slate-50 hover:text-indigo-600 transition-all active:scale-95 shadow-sm"
+           >
+              <RefreshCcw className="w-6 h-6" />
            </button>
            <button 
             onClick={async () => {
@@ -367,12 +423,12 @@ const ExtensionUI: React.FC = () => {
               const blob = await docxGenerator.generate(editableResume, 'modern');
               const url = URL.createObjectURL(blob);
               const a = document.createElement('a');
-              a.href = url; a.download = `Tailored_Resume_${Date.now()}.docx`;
+              a.href = url; a.download = `Optimized_Resume_${Date.now()}.docx`;
               a.click();
             }}
-            className="flex-1 py-4 bg-indigo-600 text-white rounded-2xl font-extrabold text-xs uppercase tracking-widest shadow-xl shadow-indigo-100 hover:bg-indigo-700 transition-all flex items-center justify-center gap-3 btn-shine active:scale-[0.98]"
+            className="flex-1 py-5 bg-gradient-to-r from-indigo-600 to-violet-600 text-white rounded-[1.5rem] font-extrabold text-sm uppercase tracking-widest shadow-xl shadow-indigo-200 hover:shadow-indigo-300 hover:-translate-y-1 transition-all flex items-center justify-center gap-4 btn-shine active:scale-[0.98]"
            >
-              <Download className="w-4 h-4" /> Download DOCX
+              <Download className="w-5 h-5" /> Download Result
            </button>
         </div>
       )}

@@ -7,116 +7,70 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-    <style>
-        :root {
-            --brand: #6366f1;
-            --brand-light: #818cf8;
-            --brand-dark: #4f46e5;
-            --bg: #fdfdfd;
-            --surface: #ffffff;
-            --surface-alt: #f8fafc;
-            --border: #e2e8f0;
-            --text-main: #0f172a;
-            --text-muted: #64748b;
-            --success: #10b981;
-            --warning: #f59e0b;
-            --error: #ef4444;
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              sans: ['Plus Jakarta Sans', 'sans-serif'],
+              mono: ['JetBrains Mono', 'monospace'],
+            },
+            colors: {
+              brand: {
+                50: '#eef2ff',
+                100: '#e0e7ff',
+                200: '#c7d2fe',
+                300: '#a5b4fc',
+                400: '#818cf8',
+                500: '#6366f1',
+                600: '#4f46e5',
+                700: '#4338ca',
+                800: '#3730a3',
+                900: '#312e81',
+              },
+            },
+            animation: {
+              'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+              'slide-up': 'slideUp 0.4s ease-out forwards',
+            },
+            keyframes: {
+              slideUp: {
+                '0%': { opacity: '0', transform: 'translateY(10px)' },
+                '100%': { opacity: '1', transform: 'translateY(0)' },
+              }
+            }
+          }
+        }
+      }
+    </script>
+    <style type="text/tailwindcss">
+        @layer base {
+            body {
+                @apply bg-[#f8fafc] text-[#0f172a] antialiased overflow-hidden h-screen;
+            }
         }
 
-        * {
-            box-sizing: border-box;
-            -webkit-font-smoothing: antialiased;
-            -moz-osx-font-smoothing: grayscale;
+        @layer components {
+            .glass {
+                @apply bg-white/80 backdrop-blur-xl border-b border-white/20;
+            }
+            .custom-scrollbar::-webkit-scrollbar {
+                @apply w-1.5;
+            }
+            .custom-scrollbar::-webkit-scrollbar-track {
+                @apply bg-transparent;
+            }
+            .custom-scrollbar::-webkit-scrollbar-thumb {
+                @apply bg-slate-200 rounded-full hover:bg-slate-300 transition-colors;
+            }
+            .btn-shine {
+                @apply relative overflow-hidden after:content-[''] after:absolute after:top-[-50%] after:left-[-50%] after:w-[200%] after:height-[200%] after:bg-[linear-gradient(to_bottom_right,rgba(255,255,255,0)_0%,rgba(255,255,255,0.1)_50%,rgba(255,255,255,0)_100%)] after:rotate-45 after:transition-all after:duration-500 hover:after:left-[50%] hover:after:top-[50%];
+            }
+            .shadow-premium {
+                box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.02);
+            }
         }
-
-        body {
-            font-family: 'Plus Jakarta Sans', sans-serif;
-            background-color: var(--bg);
-            color: var(--text-main);
-            margin: 0;
-            padding: 0;
-            overflow: hidden;
-            height: 100vh;
-        }
-
-        #root {
-            height: 100vh;
-            display: flex;
-            flex-direction: column;
-        }
-
-        /* Sophisticated Scrollbar */
-        .custom-scrollbar::-webkit-scrollbar {
-            width: 5px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-track {
-            background: transparent;
-        }
-        .custom-scrollbar::-webkit-scrollbar-thumb {
-            background: #cbd5e1;
-            border-radius: 10px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-            background: #94a3b8;
-        }
-
-        /* Glassmorphism & Modern UI Helpers */
-        .glass {
-            background: rgba(255, 255, 255, 0.8);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-        }
-
-        .shadow-premium {
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
-        }
-
-        .shadow-inner-soft {
-            box-shadow: inset 0 2px 4px 0 rgba(0, 0, 0, 0.03);
-        }
-
-        /* Animations */
-        @keyframes slideUp {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .animate-slide-up {
-            animation: slideUp 0.4s ease-out forwards;
-        }
-
-        .btn-shine {
-            position: relative;
-            overflow: hidden;
-        }
-
-        .btn-shine::after {
-            content: '';
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: linear-gradient(
-                to bottom right,
-                rgba(255, 255, 255, 0) 0%,
-                rgba(255, 255, 255, 0.1) 50%,
-                rgba(255, 255, 255, 0) 100%
-            );
-            transform: rotate(45deg);
-            transition: all 0.3s;
-            pointer-events: none;
-        }
-
-        .btn-shine:hover::after {
-            left: 50%;
-            top: 50%;
-        }
-
-        /* Utilities */
-        .rounded-pill { border-radius: 9999px; }
-        .font-mono { font-family: 'JetBrains Mono', monospace; }
     </style>
 <script type="importmap">
 {
