@@ -138,28 +138,24 @@ const ExtensionUI: React.FC = () => {
   };
 
   return (
-    <div className="h-full flex flex-col bg-[#f8fafc] relative overflow-hidden text-slate-900 font-sans">
-      {/* Dynamic Header */}
-      <header className="glass sticky top-0 z-50 px-6 py-4 flex justify-between items-center border-b border-slate-200/60 shadow-sm">
+    <div className="h-full flex flex-col relative overflow-hidden">
+      {/* Header */}
+      <header className="glass p-4 flex justify-between items-center sticky top-0 z-50">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-gradient-to-br from-indigo-600 to-violet-600 rounded-2xl flex items-center justify-center shadow-lg shadow-indigo-200/50">
-            <Zap className="w-5 h-5 text-white fill-white/20" />
+          <div className="flex items-center justify-center" style={{ width: '40px', height: '40px', background: 'linear-gradient(135deg, var(--brand-600), var(--violet-600))', borderRadius: '12px', boxShadow: '0 8px 16px rgba(79, 70, 229, 0.2)' }}>
+            <Zap size={20} color="white" fill="rgba(255,255,255,0.2)" />
           </div>
-          <div>
-            <h1 className="text-base font-extrabold tracking-tight text-slate-900 m-0 leading-tight">CareerAgent</h1>
-            <div className="flex items-center gap-1.5">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]"></span>
-              <p className="text-[10px] font-bold text-indigo-600 uppercase tracking-widest m-0 leading-tight">ATS Logic Active</p>
+          <div className="flex flex-col">
+            <h1 className="font-extrabold m-0" style={{ fontSize: '1rem', lineHeight: '1.2' }}>CareerAgent</h1>
+            <div className="flex items-center gap-2">
+              <span className="status-dot animate-pulse"></span>
+              <span className="uppercase tracking-widest font-bold" style={{ fontSize: '10px', color: 'var(--brand-600)' }}>ATS Active</span>
             </div>
           </div>
         </div>
         {parsedMasterResume && (
-          <button 
-            onClick={() => setAppState(AppState.PROFILE)} 
-            className="w-10 h-10 rounded-2xl bg-white border border-slate-200 flex items-center justify-center hover:bg-indigo-50 hover:text-indigo-600 transition-all active:scale-90 shadow-sm"
-            title="My Profile"
-          >
-            <UserCircle className="w-6 h-6" />
+          <button onClick={() => setAppState(AppState.PROFILE)} style={{ background: 'white', border: '1px solid var(--border)', borderRadius: '12px', padding: '8px', cursor: 'pointer' }}>
+            <UserCircle size={20} color="var(--text-muted)" />
           </button>
         )}
       </header>
@@ -167,207 +163,135 @@ const ExtensionUI: React.FC = () => {
       <div className="flex-1 overflow-y-auto custom-scrollbar p-6">
         {/* Setup Phase */}
         {appState === AppState.SETUP && (
-          <div className="space-y-10 mt-4 animate-slide-up">
-            <div className="space-y-3">
-              <h2 className="text-3xl font-extrabold tracking-tight text-slate-900 leading-[1.15]">
-                Tailor your <br/><span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-violet-600">future in seconds.</span>
+          <div className="animate-slide-up flex flex-col gap-8 mt-4">
+            <div className="flex flex-col gap-2">
+              <h2 className="font-extrabold m-0" style={{ fontSize: '1.75rem', lineHeight: '1.2', color: 'var(--text-main)' }}>
+                Elevate your <br/><span style={{ color: 'var(--brand-600)' }}>job hunt.</span>
               </h2>
-              <p className="text-[13px] text-slate-500 font-medium max-w-[280px]">Upload your master resume once, and we'll optimize it for every job you see.</p>
+              <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)', fontWeight: 500 }}>Upload your base resume once, tailor it for every role instantly.</p>
             </div>
-            
-            <div className="relative group">
-              <input type="file" id="resume-up" className="hidden" onChange={handleFileUpload} accept=".pdf,.docx,.txt" />
-              <label htmlFor="resume-up" className="block cursor-pointer">
-                <div className="border-2 border-dashed border-slate-200 rounded-[2.5rem] p-12 bg-white text-center hover:border-indigo-500 hover:bg-indigo-50/20 transition-all duration-300 shadow-premium group-active:scale-[0.98]">
-                  <div className="w-20 h-20 bg-gradient-to-br from-indigo-50 to-violet-50 rounded-3xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 group-hover:rotate-3 transition-all duration-300 shadow-inner">
-                    <Upload className="w-9 h-9 text-indigo-600" />
-                  </div>
-                  <h3 className="text-lg font-bold text-slate-800">Select Resume</h3>
-                  <p className="text-xs text-slate-400 font-medium mt-1.5">PDF, Word, or Text (Max 5MB)</p>
+
+            <div className="card p-8 text-center" style={{ borderStyle: 'dashed', background: 'white' }}>
+              <input type="file" id="resume-up" className="absolute" style={{ opacity: 0, cursor: 'pointer', inset: 0 }} onChange={handleFileUpload} accept=".pdf,.docx,.txt" />
+              <div className="flex flex-col items-center gap-4">
+                <div style={{ padding: '20px', borderRadius: '24px', backgroundColor: 'var(--brand-50)' }}>
+                  <Upload size={32} color="var(--brand-600)" />
                 </div>
-              </label>
+                <div>
+                  <h3 className="font-bold m-0" style={{ fontSize: '1rem' }}>Drop Resume Here</h3>
+                  <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '4px' }}>PDF, DOCX, or Text (Max 5MB)</p>
+                </div>
+              </div>
             </div>
 
             {isProcessing && (
-              <div className="flex flex-col items-center justify-center gap-4 py-6 bg-indigo-50/50 rounded-3xl border border-indigo-100/50 animate-pulse">
-                <RefreshCcw className="w-6 h-6 text-indigo-600 animate-spin" />
-                <span className="text-[11px] font-bold text-indigo-600 uppercase tracking-[0.15em]">Parsing Resume Intelligence...</span>
+              <div className="flex items-center justify-center gap-3 p-4 animate-pulse" style={{ background: 'var(--brand-50)', borderRadius: '1rem', border: '1px solid var(--brand-100)' }}>
+                <RefreshCcw size={16} className="animate-spin" color="var(--brand-600)" />
+                <span className="font-bold uppercase tracking-widest" style={{ fontSize: '0.7rem', color: 'var(--brand-600)' }}>Analyzing Intelligence...</span>
               </div>
             )}
-            {error && (
-              <div className="p-5 bg-red-50 border border-red-100 rounded-[2rem] text-[12px] text-red-600 font-bold flex items-center gap-4 shadow-sm">
-                <div className="w-8 h-8 rounded-xl bg-red-100 flex items-center justify-center shrink-0">
-                  <AlertCircle className="w-5 h-5" />
-                </div>
-                {error}
-              </div>
-            )}
+            {error && <div className="p-4" style={{ backgroundColor: '#fef2f2', border: '1px solid #fee2e2', borderRadius: '1rem', color: '#dc2626', fontSize: '0.75rem', fontWeight: 700 }}>{error}</div>}
           </div>
         )}
 
-        {/* Profile Dashboard */}
+        {/* Profile Phase */}
         {appState === AppState.PROFILE && parsedMasterResume && (
-          <div className="space-y-8 mt-2 animate-slide-up">
-            <div className="bg-white rounded-[2.5rem] p-8 shadow-premium border border-slate-100 text-center space-y-8 relative overflow-hidden">
-              <div className="absolute top-0 left-0 w-full h-24 bg-gradient-to-br from-indigo-600/5 to-violet-600/5 pointer-events-none"></div>
-              
-              <div className="relative z-10 space-y-6">
-                <div className="relative inline-block">
-                  <div className="w-28 h-28 bg-gradient-to-br from-indigo-600 to-violet-600 rounded-[2.5rem] flex items-center justify-center mx-auto shadow-2xl shadow-indigo-200 rotate-6 hover:rotate-0 transition-all duration-500">
-                    <UserCircle className="w-14 h-14 text-white" />
-                  </div>
-                  <div className="absolute -bottom-2 -right-2 w-10 h-10 bg-emerald-500 rounded-2xl border-4 border-white flex items-center justify-center shadow-lg">
-                    <CheckCircle2 className="w-5 h-5 text-white" />
-                  </div>
+          <div className="animate-slide-up flex flex-col gap-6">
+            <div className="card p-8 text-center flex flex-col items-center gap-6 relative overflow-hidden">
+              <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '80px', background: 'linear-gradient(135deg, var(--brand-50), var(--brand-100))', opacity: 0.5 }}></div>
+              <div className="relative" style={{ marginTop: '20px' }}>
+                {/* Fixed the justifyCenter typo to justifyContent */}
+                <div style={{ width: '96px', height: '96px', background: 'linear-gradient(135deg, var(--brand-600), var(--violet-600))', borderRadius: '32px', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 12px 24px rgba(79, 70, 229, 0.3)', transform: 'rotate(6deg)' }}>
+                  <UserCircle size={48} color="white" />
                 </div>
-                
-                <div>
-                  <h3 className="text-2xl font-extrabold text-slate-900 m-0 tracking-tight">{parsedMasterResume.fullName}</h3>
-                  <div className="inline-flex items-center gap-2 mt-2 px-3 py-1 bg-indigo-50 text-indigo-600 rounded-full text-[10px] font-bold uppercase tracking-widest border border-indigo-100">
-                    Master Profile Verified
-                  </div>
-                </div>
-
-                <div className="space-y-4">
-                  <button 
-                    onClick={handleScrapeAndOptimize}
-                    disabled={isProcessing}
-                    className="w-full py-5 bg-gradient-to-r from-indigo-600 to-violet-600 text-white rounded-2xl font-bold text-sm shadow-xl shadow-indigo-200/50 hover:shadow-indigo-300/50 hover:-translate-y-1 transition-all active:scale-95 disabled:opacity-50 btn-shine flex items-center justify-center gap-3"
-                  >
-                    {isProcessing ? (
-                      <RefreshCcw className="w-5 h-5 animate-spin" />
-                    ) : (
-                      <Sparkles className="w-5 h-5 fill-white/20" />
-                    )}
-                    {isProcessing ? 'Thinking...' : 'Match to Current Job'}
-                  </button>
-
-                  <button onClick={clearProfile} className="text-[11px] font-bold text-slate-400 uppercase tracking-widest hover:text-red-500 transition-colors flex items-center justify-center gap-2 mx-auto pt-2">
-                    <Trash2 className="w-4 h-4" /> Reset Master Data
-                  </button>
+                <div style={{ position: 'absolute', bottom: '-4px', right: '-4px', background: 'var(--emerald-500)', borderRadius: '12px', padding: '4px', border: '4px solid white' }}>
+                  <CheckCircle2 size={16} color="white" />
                 </div>
               </div>
+              <div>
+                <h3 className="font-extrabold m-0" style={{ fontSize: '1.25rem' }}>{parsedMasterResume.fullName}</h3>
+                <span className="uppercase font-bold tracking-widest" style={{ fontSize: '10px', color: 'var(--text-muted)', marginTop: '4px', display: 'block' }}>Verified Profile Active</span>
+              </div>
+
+              <button onClick={handleScrapeAndOptimize} disabled={isProcessing} className="btn-primary w-full">
+                {isProcessing ? <RefreshCcw className="animate-spin" size={20} /> : <Sparkles size={20} fill="rgba(255,255,255,0.2)" />}
+                {isProcessing ? 'Synchronizing...' : 'Match Current Page'}
+              </button>
+
+              <button onClick={clearProfile} style={{ background: 'transparent', border: 'none', color: 'var(--text-muted)', fontSize: '0.7rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', cursor: 'pointer' }}>
+                <Trash2 size={12} style={{ marginRight: '6px' }} /> Reset Master Data
+              </button>
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
-              <div className="bg-white p-5 rounded-[2rem] border border-slate-100 shadow-sm hover:border-indigo-200 transition-colors">
-                <div className="w-10 h-10 bg-indigo-50 rounded-xl flex items-center justify-center mb-4">
-                  <Sparkles className="w-5 h-5 text-indigo-600" />
-                </div>
-                <span className="text-[10px] font-black uppercase text-slate-400 tracking-wider">Skills Found</span>
-                <p className="text-lg font-extrabold mt-1 text-slate-900">{parsedMasterResume.skills?.length || 0}</p>
+            <div className="flex gap-4">
+              <div className="card p-4 flex-1">
+                <span className="uppercase font-bold text-muted" style={{ fontSize: '0.6rem' }}>Identified Skills</span>
+                <p className="font-extrabold m-0" style={{ fontSize: '1.25rem', color: 'var(--brand-600)' }}>{parsedMasterResume.skills?.length || 0}</p>
               </div>
-              <div className="bg-white p-5 rounded-[2rem] border border-slate-100 shadow-sm hover:border-violet-200 transition-colors">
-                <div className="w-10 h-10 bg-violet-50 rounded-xl flex items-center justify-center mb-4">
-                  <BarChart3 className="w-5 h-5 text-violet-600" />
-                </div>
-                <span className="text-[10px] font-black uppercase text-slate-400 tracking-wider">Experience</span>
-                <p className="text-lg font-extrabold mt-1 text-slate-900">{parsedMasterResume.experience?.length || 0} Roles</p>
+              <div className="card p-4 flex-1">
+                <span className="uppercase font-bold text-muted" style={{ fontSize: '0.6rem' }}>Experience</span>
+                <p className="font-extrabold m-0" style={{ fontSize: '1.25rem', color: 'var(--brand-600)' }}>{parsedMasterResume.experience?.length || 0} Roles</p>
               </div>
             </div>
-          </div>
-        )}
-
-        {/* Manual Input Fallback */}
-        {appState === AppState.JOB_INPUT && (
-          <div className="space-y-6 animate-slide-up">
-            <div className="bg-white rounded-[2.5rem] p-8 shadow-premium border border-slate-100 space-y-6">
-              <div className="flex items-center gap-4">
-                <div className="w-12 h-12 bg-amber-50 rounded-2xl flex items-center justify-center shrink-0">
-                  <Layout className="w-6 h-6 text-amber-600" />
-                </div>
-                <div>
-                  <h4 className="text-base font-extrabold m-0">Paste Job Details</h4>
-                  <p className="text-xs text-slate-400 font-medium">Automatic detection failed on this page.</p>
-                </div>
-              </div>
-              <textarea 
-                value={jobDescription}
-                onChange={e => setJobDescription(e.target.value)}
-                placeholder="Paste the full job description here..."
-                className="w-full h-64 p-6 text-[13px] font-medium border border-slate-100 rounded-[2rem] bg-slate-50 focus:ring-4 focus:ring-indigo-100/50 focus:bg-white focus:border-indigo-200 transition-all outline-none resize-none custom-scrollbar leading-relaxed"
-              />
-            </div>
-            <button 
-              onClick={() => runOptimization(jobDescription)}
-              disabled={!jobDescription.trim()}
-              className="w-full py-5 bg-gradient-to-r from-indigo-600 to-violet-600 text-white rounded-[2rem] font-bold text-sm shadow-xl shadow-indigo-100 hover:shadow-indigo-200 hover:-translate-y-0.5 transition-all flex items-center justify-center gap-3 disabled:bg-slate-200 active:scale-95"
-            >
-              Tailor My Resume <ChevronRight className="w-5 h-5" />
-            </button>
           </div>
         )}
 
         {/* Optimizing State */}
         {appState === AppState.OPTIMIZING && (
-          <div className="py-24 text-center space-y-10 animate-slide-up">
-            <div className="relative inline-block">
-              <div className="w-24 h-24 border-4 border-slate-100 border-t-indigo-600 rounded-full animate-spin mx-auto"></div>
-              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-14 h-14 bg-indigo-50 rounded-3xl flex items-center justify-center">
-                <Sparkles className="w-8 h-8 text-indigo-600 animate-pulse" />
-              </div>
+          <div className="py-24 text-center animate-slide-up flex flex-col items-center gap-6">
+            <div className="relative">
+              <div style={{ width: '80px', height: '80px', border: '4px solid var(--brand-100)', borderTopColor: 'var(--brand-600)', borderRadius: '50%' }} className="animate-spin"></div>
+              <Sparkles className="absolute animate-pulse" size={24} color="var(--brand-600)" style={{ top: '50%', left: '50%', transform: 'translate(-50%, -50%)' }} />
             </div>
-            <div className="space-y-3">
-              <h3 className="text-xl font-extrabold text-slate-900 tracking-tight">AI Agent Working</h3>
-              <p className="text-[13px] text-slate-500 font-medium px-10">Matching your experience to top job keywords for peak ATS performance.</p>
+            <div>
+              <h3 className="font-extrabold" style={{ fontSize: '1.1rem' }}>AI Matching Engine</h3>
+              <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>Tailoring your profile for maximum ATS visibility...</p>
             </div>
           </div>
         )}
 
-        {/* Result State */}
+        {/* Completed Results */}
         {appState === AppState.COMPLETED && optimizationResult && editableResume && (
-          <div className="space-y-6 animate-slide-up pb-32">
-            <div className="bg-gradient-to-br from-indigo-700 via-indigo-600 to-violet-700 rounded-[2.5rem] p-10 text-white shadow-2xl shadow-indigo-200 flex items-center justify-between relative overflow-hidden">
-              <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -translate-y-1/2 translate-x-1/2 blur-2xl"></div>
-              <div className="relative z-10">
-                <p className="text-[11px] font-black uppercase tracking-[0.2em] opacity-80 mb-2">Target Match Score</p>
-                <h2 className="text-5xl font-black m-0 tracking-tighter">{optimizationResult.optimizedScore}%</h2>
-                <div className="flex items-center gap-2 mt-4">
-                  <span className="px-3 py-1 bg-white/20 rounded-full text-[10px] font-bold border border-white/10">
-                    +{optimizationResult.optimizedScore - (optimizationResult.originalScore || 0)}% Boost
-                  </span>
+          <div className="animate-slide-up flex flex-col gap-6 pb-24">
+            <div className="score-display">
+              <div className="flex justify-between items-center relative z-10">
+                <div>
+                  <p className="uppercase font-bold tracking-widest m-0" style={{ fontSize: '0.65rem', opacity: 0.8 }}>ATS Match Confidence</p>
+                  <h2 className="font-extrabold m-0" style={{ fontSize: '3rem', letterSpacing: '-2px' }}>{optimizationResult.optimizedScore}%</h2>
+                  <div className="flex items-center gap-2 mt-2">
+                    <span style={{ background: 'rgba(255,255,255,0.2)', padding: '4px 10px', borderRadius: '10px', fontSize: '0.65rem', fontWeight: 800 }}>
+                      +{optimizationResult.optimizedScore - (optimizationResult.originalScore || 0)}% Boost
+                    </span>
+                  </div>
                 </div>
-              </div>
-              <div className="relative z-10 w-24 h-24 bg-white/10 rounded-[2.5rem] border-2 border-white/20 flex items-center justify-center text-3xl font-black shadow-inner">
-                A+
+                <div style={{ width: '80px', height: '80px', background: 'rgba(255,255,255,0.1)', borderRadius: '24px', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px solid rgba(255,255,255,0.2)', fontSize: '2rem', fontWeight: 900 }}>
+                  A+
+                </div>
               </div>
             </div>
 
-            <nav className="flex bg-white p-2 rounded-2xl shadow-sm border border-slate-200/50">
-              {[
-                { id: 'resume', icon: FileEdit, label: 'Resume' },
-                { id: 'cover', icon: FileText, label: 'Letter' },
-                { id: 'diff', icon: BarChart3, label: 'Gaps' }
-              ].map(tab => (
-                <button 
-                  key={tab.id} 
-                  onClick={() => setActiveTab(tab.id as any)}
-                  className={`flex-1 py-4 flex items-center justify-center gap-3 text-[11px] font-bold uppercase tracking-wider rounded-xl transition-all ${activeTab === tab.id ? 'bg-gradient-to-r from-indigo-600 to-indigo-700 text-white shadow-lg' : 'text-slate-500 hover:text-indigo-600 hover:bg-indigo-50/50'}`}
-                >
-                  <tab.icon className={`w-4 h-4 ${activeTab === tab.id ? 'text-white' : 'text-slate-400'}`} /> {tab.label}
-                </button>
-              ))}
-            </nav>
+            <div className="flex p-1.5" style={{ background: '#e2e8f0', borderRadius: '1.25rem' }}>
+              <button onClick={() => setActiveTab('resume')} className={`tab-button ${activeTab === 'resume' ? 'active' : ''}`}>Resume</button>
+              <button onClick={() => setActiveTab('cover')} className={`tab-button ${activeTab === 'cover' ? 'active' : ''}`}>Letter</button>
+              <button onClick={() => setActiveTab('diff')} className={`tab-button ${activeTab === 'diff' ? 'active' : ''}`}>Gaps</button>
+            </div>
 
             {activeTab === 'resume' && (
-              <div className="bg-white p-8 rounded-[2.5rem] border border-slate-100 shadow-premium space-y-6">
-                <div className="flex items-center justify-between border-b border-slate-100 pb-5">
-                  <h4 className="text-sm font-extrabold text-slate-900 m-0 flex items-center gap-3">
-                    <CheckCircle2 className="w-5 h-5 text-emerald-500" /> Analysis Complete
-                  </h4>
-                  <span className="px-3 py-1 bg-emerald-50 text-emerald-600 rounded-full text-[10px] font-bold border border-emerald-100">Optimized</span>
+              <div className="card p-6 flex flex-col gap-4 animate-slide-up">
+                <div className="flex items-center gap-2 pb-4" style={{ borderBottom: '1px solid var(--border)' }}>
+                  <CheckCircle2 size={18} color="var(--emerald-500)" />
+                  <h4 className="font-extrabold m-0" style={{ fontSize: '0.85rem' }}>Optimized Profile Content</h4>
                 </div>
-                
-                <div className="space-y-4">
-                  <div className="p-5 bg-slate-50 rounded-2xl border border-slate-100 hover:bg-white transition-colors">
-                    <span className="text-[10px] font-black uppercase text-slate-400 tracking-wider">Strategic Summary</span>
-                    <p className="text-[13px] leading-relaxed text-slate-700 mt-2.5 font-medium">{editableResume.summary}</p>
+                <div className="flex flex-col gap-4">
+                  <div style={{ background: 'var(--bg)', padding: '1.25rem', borderRadius: '1rem' }}>
+                    <span className="uppercase font-bold" style={{ fontSize: '0.6rem', color: 'var(--text-muted)' }}>Targeted Summary</span>
+                    <p style={{ fontSize: '0.75rem', lineHeight: '1.6', marginTop: '8px', color: 'var(--text-main)', fontWeight: 500 }}>{editableResume.summary}</p>
                   </div>
-                  <div className="p-5 bg-slate-50 rounded-2xl border border-slate-100 hover:bg-white transition-colors">
-                    <span className="text-[10px] font-black uppercase text-slate-400 tracking-wider">Injected Keywords</span>
+                  <div style={{ background: 'var(--brand-50)', padding: '1.25rem', borderRadius: '1rem', border: '1px solid var(--brand-100)' }}>
+                    <span className="uppercase font-bold" style={{ fontSize: '0.6rem', color: 'var(--brand-600)' }}>Critical Gaps Filled</span>
                     <div className="flex flex-wrap gap-2 mt-3">
-                      {optimizationResult.analysis.keywordGaps.slice(0, 8).map((k, i) => (
-                        <span key={i} className="px-3 py-1.5 bg-white text-indigo-600 rounded-xl text-[10px] font-bold border border-indigo-100 shadow-sm">
+                      {optimizationResult.analysis.keywordGaps.slice(0, 6).map((k, i) => (
+                        <span key={i} style={{ background: 'white', color: 'var(--brand-600)', padding: '4px 10px', borderRadius: '8px', fontSize: '0.65rem', fontWeight: 700, border: '1px solid var(--brand-100)' }}>
                           {k}
                         </span>
                       ))}
@@ -378,58 +302,51 @@ const ExtensionUI: React.FC = () => {
             )}
 
             {activeTab === 'cover' && (
-              <div className="bg-white p-10 rounded-[2.5rem] border border-slate-100 shadow-premium">
-                <div className="flex justify-between items-center mb-8">
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 bg-indigo-50 rounded-xl flex items-center justify-center">
-                       <FileText className="w-5 h-5 text-indigo-600" />
-                    </div>
-                    <h4 className="text-sm font-extrabold text-slate-900 m-0">Cover Letter</h4>
+              <div className="card p-8 animate-slide-up">
+                <div className="flex justify-between items-center mb-6">
+                  <div className="flex items-center gap-2">
+                    <FileText size={18} color="var(--brand-600)" />
+                    <h4 className="font-extrabold m-0" style={{ fontSize: '0.85rem' }}>Cover Letter</h4>
                   </div>
-                  <button onClick={() => navigator.clipboard.writeText(optimizationResult.coverLetter)} className="p-3 rounded-2xl bg-indigo-50 text-indigo-600 hover:bg-indigo-100 active:scale-90 transition-all shadow-sm">
-                    <Copy className="w-5 h-5" />
+                  <button onClick={() => navigator.clipboard.writeText(optimizationResult.coverLetter)} style={{ background: 'var(--brand-50)', border: 'none', borderRadius: '12px', padding: '10px', cursor: 'pointer' }}>
+                    <Copy size={16} color="var(--brand-600)" />
                   </button>
                 </div>
-                <div className="text-[13px] leading-[1.7] whitespace-pre-wrap font-medium text-slate-600 bg-slate-50/50 p-8 rounded-[2rem] border border-slate-100 border-dashed">
+                <div style={{ fontSize: '0.75rem', lineHeight: '1.8', color: 'var(--text-main)', fontStyle: 'italic', background: 'var(--bg)', padding: '1.5rem', borderRadius: '1.5rem', border: '1px dashed var(--border)', whiteSpace: 'pre-wrap' }}>
                   {optimizationResult.coverLetter}
                 </div>
               </div>
             )}
 
             {activeTab === 'diff' && (
-              <div className="h-[550px] flex flex-col animate-slide-up">
-                <div className="bg-slate-900 p-4 rounded-t-[2.5rem] border-b border-white/10">
-                   <p className="text-[10px] font-bold text-white/50 uppercase tracking-widest px-2">Diff Comparison Mode</p>
-                </div>
-                <DiffView original={masterResumeRaw} optimized={JSON.stringify(editableResume, null, 2)} />
-              </div>
+               <div className="animate-slide-up flex flex-col" style={{ height: '450px' }}>
+                  <DiffView original={masterResumeRaw} optimized={JSON.stringify(editableResume, null, 2)} />
+               </div>
             )}
           </div>
         )}
       </div>
 
-      {/* Persistent Footer Actions */}
+      {/* Footer Actions */}
       {appState === AppState.COMPLETED && (
-        <div className="absolute bottom-0 left-0 right-0 p-8 bg-white/90 backdrop-blur-2xl border-t border-slate-200/50 flex gap-4 z-50">
-           <button 
-             onClick={() => setAppState(AppState.PROFILE)} 
-             className="w-16 h-16 bg-white border border-slate-200 text-slate-500 rounded-[1.5rem] flex items-center justify-center hover:bg-slate-50 hover:text-indigo-600 transition-all active:scale-95 shadow-sm"
-           >
-              <RefreshCcw className="w-6 h-6" />
-           </button>
-           <button 
+        <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, padding: '1.5rem', background: 'rgba(255,255,255,0.9)', backdropFilter: 'blur(12px)', borderTop: '1px solid var(--border)', display: 'flex', gap: '1rem' }}>
+          <button onClick={() => setAppState(AppState.PROFILE)} style={{ width: '64px', height: '64px', background: 'white', border: '1px solid var(--border)', borderRadius: '1.25rem', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}>
+            <RefreshCcw size={24} color="var(--text-muted)" />
+          </button>
+          <button 
             onClick={async () => {
               if (!editableResume) return;
               const blob = await docxGenerator.generate(editableResume, 'modern');
               const url = URL.createObjectURL(blob);
               const a = document.createElement('a');
-              a.href = url; a.download = `Optimized_Resume_${Date.now()}.docx`;
+              a.href = url; a.download = `Tailored_Resume_${Date.now()}.docx`;
               a.click();
             }}
-            className="flex-1 py-5 bg-gradient-to-r from-indigo-600 to-violet-600 text-white rounded-[1.5rem] font-extrabold text-sm uppercase tracking-widest shadow-xl shadow-indigo-200 hover:shadow-indigo-300 hover:-translate-y-1 transition-all flex items-center justify-center gap-4 btn-shine active:scale-[0.98]"
-           >
-              <Download className="w-5 h-5" /> Download Result
-           </button>
+            className="btn-primary" style={{ flex: 1, height: '64px' }}
+          >
+            <Download size={20} />
+            <span className="uppercase tracking-widest font-extrabold" style={{ fontSize: '0.75rem' }}>Download Result</span>
+          </button>
         </div>
       )}
     </div>

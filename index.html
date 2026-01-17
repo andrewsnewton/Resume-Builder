@@ -7,69 +7,162 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-      tailwind.config = {
-        theme: {
-          extend: {
-            fontFamily: {
-              sans: ['Plus Jakarta Sans', 'sans-serif'],
-              mono: ['JetBrains Mono', 'monospace'],
-            },
-            colors: {
-              brand: {
-                50: '#eef2ff',
-                100: '#e0e7ff',
-                200: '#c7d2fe',
-                300: '#a5b4fc',
-                400: '#818cf8',
-                500: '#6366f1',
-                600: '#4f46e5',
-                700: '#4338ca',
-                800: '#3730a3',
-                900: '#312e81',
-              },
-            },
-            animation: {
-              'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
-              'slide-up': 'slideUp 0.4s ease-out forwards',
-            },
-            keyframes: {
-              slideUp: {
-                '0%': { opacity: '0', transform: 'translateY(10px)' },
-                '100%': { opacity: '1', transform: 'translateY(0)' },
-              }
-            }
-          }
-        }
-      }
-    </script>
-    <style type="text/tailwindcss">
-        @layer base {
-            body {
-                @apply bg-[#f8fafc] text-[#0f172a] antialiased overflow-hidden h-screen;
-            }
+    <style>
+        :root {
+            --brand-50: #eef2ff;
+            --brand-100: #e0e7ff;
+            --brand-200: #c7d2fe;
+            --brand-500: #6366f1;
+            --brand-600: #4f46e5;
+            --brand-700: #4338ca;
+            --violet-500: #8b5cf6;
+            --violet-600: #7c3aed;
+            --emerald-500: #10b981;
+            --bg: #f8fafc;
+            --surface: #ffffff;
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+            --border: #e2e8f0;
         }
 
-        @layer components {
-            .glass {
-                @apply bg-white/80 backdrop-blur-xl border-b border-white/20;
-            }
-            .custom-scrollbar::-webkit-scrollbar {
-                @apply w-1.5;
-            }
-            .custom-scrollbar::-webkit-scrollbar-track {
-                @apply bg-transparent;
-            }
-            .custom-scrollbar::-webkit-scrollbar-thumb {
-                @apply bg-slate-200 rounded-full hover:bg-slate-300 transition-colors;
-            }
-            .btn-shine {
-                @apply relative overflow-hidden after:content-[''] after:absolute after:top-[-50%] after:left-[-50%] after:w-[200%] after:height-[200%] after:bg-[linear-gradient(to_bottom_right,rgba(255,255,255,0)_0%,rgba(255,255,255,0.1)_50%,rgba(255,255,255,0)_100%)] after:rotate-45 after:transition-all after:duration-500 hover:after:left-[50%] hover:after:top-[50%];
-            }
-            .shadow-premium {
-                box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.02);
-            }
+        * { box-sizing: border-box; -webkit-font-smoothing: antialiased; }
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: var(--bg);
+            color: var(--text-main);
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            height: 100vh;
+        }
+
+        #root { height: 100vh; display: flex; flex-direction: column; }
+
+        /* Typography & Layout Utility Classes */
+        .flex { display: flex; }
+        .flex-col { flex-direction: column; }
+        .flex-1 { flex: 1; }
+        .items-center { align-items: center; }
+        .justify-between { justify-content: space-between; }
+        .justify-center { justify-content: center; }
+        .gap-2 { gap: 0.5rem; }
+        .gap-3 { gap: 0.75rem; }
+        .gap-4 { gap: 1rem; }
+        .p-4 { padding: 1rem; }
+        .p-6 { padding: 1.5rem; }
+        .p-8 { padding: 2rem; }
+        .mt-4 { margin-top: 1rem; }
+        .w-full { width: 100%; }
+        .h-full { height: 100%; }
+        .text-center { text-align: center; }
+        .font-bold { font-weight: 700; }
+        .font-extrabold { font-weight: 800; }
+        .uppercase { text-transform: uppercase; }
+        .tracking-widest { letter-spacing: 0.1em; }
+        .relative { position: relative; }
+        .absolute { position: absolute; }
+        .overflow-hidden { overflow: hidden; }
+
+        /* Premium Components */
+        .glass {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        .card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 2rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--brand-600), var(--violet-600));
+            color: white;
+            border: none;
+            border-radius: 1.25rem;
+            font-weight: 700;
+            padding: 1.25rem;
+            cursor: pointer;
+            box-shadow: 0 10px 15px -3px rgba(79, 70, 229, 0.3);
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.75rem;
+        }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 20px 25px -5px rgba(79, 70, 229, 0.4); }
+        .btn-primary:active { transform: scale(0.98); }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background-color: var(--emerald-500);
+            box-shadow: 0 0 12px var(--emerald-500);
+            display: inline-block;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar { width: 5px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+
+        /* Animations */
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-slide-up { animation: slideUp 0.4s ease-out forwards; }
+
+        @keyframes pulseGlow {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        .animate-pulse { animation: pulseGlow 2s infinite; }
+
+        /* Specialized Styling */
+        .score-display {
+            background: linear-gradient(135deg, var(--brand-700), var(--violet-600));
+            color: white;
+            border-radius: 2.5rem;
+            padding: 2.5rem;
+            position: relative;
+            overflow: hidden;
+        }
+        .score-display::after {
+            content: '';
+            position: absolute;
+            top: -20%;
+            right: -10%;
+            width: 150px;
+            height: 150px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            filter: blur(40px);
+        }
+
+        .tab-button {
+            background: transparent;
+            border: none;
+            padding: 0.75rem 1.25rem;
+            border-radius: 1rem;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: all 0.2s;
+            flex: 1;
+        }
+        .tab-button.active {
+            background: white;
+            color: var(--brand-600);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
         }
     </style>
 <script type="importmap">
