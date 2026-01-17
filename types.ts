@@ -54,6 +54,7 @@ export interface OptimizationResult {
     };
   };
   optimizedResume: ResumeData;
+  coverLetter: string;
 }
 
 export enum AppState {

@@ -54,3 +54,24 @@ RULES:
 
 Output the full, valid Resume JSON object.
 `;
+
+export const COVER_LETTER_PROMPT = `
+Act as an expert Career Coach and Professional Writer. Write a compelling, high-conversion cover letter.
+
+INPUTS:
+- Optimized Resume JSON
+- Job Description
+- Strategic Gap Analysis
+
+REQUIREMENTS:
+1. **TONE**: Professional, eager, and highly tailored. Show genuine interest in the specific company and role.
+2. **STRUCTURE**:
+   - Opening: Hook the reader and state the specific role.
+   - Body Paragraph 1: Connect candidate's top achievements to the company's pain points identified in the JD.
+   - Body Paragraph 2: Demonstrate "Culture Fit" and technical alignment using keywords from the JD.
+   - Closing: Strong call to action for an interview.
+3. **FORMAT**: Plain text with clear paragraph spacing. Do not use placeholders like [Company Name] if the info is available in the JD. If company name is missing, use "your company".
+4. **INDENTATION**: Do not indent paragraphs (block style). Use double line breaks between sections.
+
+Goal: Make the recruiter feel the candidate is the perfect solution to their needs.
+`;

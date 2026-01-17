@@ -1,7 +1,7 @@
 
 import { GoogleGenAI, Type } from "@google/genai";
 import { ResumeData, OptimizationResult, AnalysisResult } from "../types";
-import { ANALYST_PROMPT, WRITER_PROMPT } from "../prompts";
+import { ANALYST_PROMPT, WRITER_PROMPT, COVER_LETTER_PROMPT } from "../prompts";
 
 // Helper to clean Markdown code blocks from AI response to prevent JSON parse errors
 const cleanJSON = (text: string) => {
@@ -95,7 +95,7 @@ export class ResumeOptimizerService {
   }
 
   /**
-   * Main Orchestration Function: Analyst -> Writer
+   * Main Orchestration Function: Analyst -> (Writer & Cover Letter Generator in Parallel)
    */
   async optimizeResume(
     originalResumeText: string,
@@ -125,13 +125,17 @@ export class ResumeOptimizerService {
         };
     }
 
-    // --- STEP 1: THE ANALYST ---
+    // --- STEP 1: THE ANALYST (Sequential) ---
     console.log("Step 1: Running Gap Analysis...");
     const analysisData = await this.runAnalystAgent(resumeData, jobDescription);
 
-    // --- STEP 2: THE WRITER ---
-    console.log("Step 2: Rewriting Resume...");
-    const optimizedResume = await this.runWriterAgent(resumeData, analysisData);
+    // --- STEP 2: THE WRITERS (Parallel) ---
+    console.log("Step 2: Rewriting Resume & Cover Letter in Parallel...");
+    
+    const [optimizedResume, coverLetter] = await Promise.all([
+      this.runWriterAgent(resumeData, analysisData),
+      this.runCoverLetterAgent(resumeData, jobDescription, analysisData)
+    ]);
 
     // --- STEP 3: CONSTRUCT RESULT ---
     return {
@@ -151,7 +155,8 @@ export class ResumeOptimizerService {
             formatting: { score: 0, feedback: "N/A" }
         }
       },
-      optimizedResume: optimizedResume
+      optimizedResume: optimizedResume,
+      coverLetter: coverLetter
     };
   }
 
@@ -277,12 +282,10 @@ export class ResumeOptimizerService {
       const data = JSON.parse(text) as ResumeData;
       
       // Validation Check for LinkedIn
-      // If AI returns null, empty, or a generic placeholder like "LinkedIn URL", revert to original
       const validLinkedin = (data.linkedin && data.linkedin.length > 5 && !data.linkedin.toLowerCase().includes("linkedin url")) 
             ? data.linkedin 
             : resume.linkedin;
 
-      // Validate critical fields to avoid UI rendering crashes
       return {
         fullName: data.fullName || resume.fullName || "Candidate",
         email: data.email || resume.email || "",
@@ -296,8 +299,30 @@ export class ResumeOptimizerService {
       };
     } catch (e) {
       console.error("Writer Agent JSON parse error:", e);
-      // Return original resume if rewrite fails to prevent data loss
       return resume;
     }
+  }
+
+  /**
+   * Agent 3: The Cover Letter Writer
+   */
+  private async runCoverLetterAgent(resume: ResumeData, jd: string, analysis: AnalysisResult): Promise<string> {
+    const response = await this.ai.models.generateContent({
+      model: this.agentModel,
+      contents: `
+        ${COVER_LETTER_PROMPT}
+
+        [RESUME DATA]:
+        ${JSON.stringify(resume)}
+
+        [JOB DESCRIPTION]:
+        ${jd}
+
+        [GAP ANALYSIS STRATEGY]:
+        ${analysis.rewriteInstructions}
+      `
+    });
+
+    return response.text || "Failed to generate cover letter.";
   }
 }

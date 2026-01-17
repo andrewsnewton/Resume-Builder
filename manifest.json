@@ -1,0 +1,32 @@
+
+{
+  "manifest_version": 3,
+  "name": "ATS Resume Optimizer",
+  "version": "1.0",
+  "description": "Optimize your resume for ATS systems based on the current job description.",
+  "permissions": [
+    "sidePanel",
+    "activeTab",
+    "scripting"
+  ],
+  "host_permissions": [
+    "<all_urls>"
+  ],
+  "side_panel": {
+    "default_path": "index.html"
+  },
+  "action": {
+    "default_title": "Open ATS Optimizer"
+  },
+  "icons": {
+    "16": "icon.png",
+    "48": "icon.png",
+    "128": "icon.png"
+  },
+  "web_accessible_resources": [
+    {
+      "resources": ["*.png", "*.svg"],
+      "matches": ["<all_urls>"]
+    }
+  ]
+}
