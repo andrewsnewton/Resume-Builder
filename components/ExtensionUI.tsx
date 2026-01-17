@@ -1,4 +1,3 @@
-
 import React, { useState, useMemo, useEffect } from 'react';
 import { 
   Upload, Zap, Download, RefreshCcw, 
@@ -140,15 +139,14 @@ const ExtensionUI: React.FC = () => {
   };
 
   return (
-    <div className="h-full flex flex-col relative overflow-hidden bg-slate-50">
-      {/* Header */}
-      <header className="glass p-4 flex justify-between items-center sticky top-0 z-[100]">
+    <div className="h-full flex flex-col bg-slate-50 overflow-hidden">
+      {/* Header - Fixed Height Container */}
+      <header className="flex-none glass p-4 flex justify-between items-center z-[100]">
         <div className="flex items-center gap-3">
           <div className="flex items-center justify-center" style={{ width: '42px', height: '42px', background: 'linear-gradient(135deg, var(--brand-600), var(--violet-600))', borderRadius: '14px', boxShadow: '0 8px 20px rgba(79, 70, 229, 0.25)' }}>
             <Zap size={22} color="white" fill="rgba(255,255,255,0.3)" />
           </div>
           <div className="flex flex-col">
-            {/* Fix: changed 'tracking' to 'letterSpacing' */}
             <h1 className="font-extrabold m-0" style={{ fontSize: '1.1rem', lineHeight: '1.1', letterSpacing: '-0.02em' }}>CareerAgent</h1>
             <div className="flex items-center gap-2 mt-0.5">
               <span className="status-dot animate-pulse"></span>
@@ -163,8 +161,8 @@ const ExtensionUI: React.FC = () => {
         )}
       </header>
 
-      {/* Main Content Area - Properly handling scroll */}
-      <div className="flex-1 overflow-y-auto custom-scrollbar relative">
+      {/* Main Content Area - Fixed flex-1 with overflow auto */}
+      <main className="flex-1 overflow-y-auto custom-scrollbar min-h-0 bg-slate-50/50">
         <div className="p-6">
           {/* Setup Phase */}
           {appState === AppState.SETUP && (
@@ -216,7 +214,7 @@ const ExtensionUI: React.FC = () => {
                 </div>
                 <div>
                   <h3 className="font-extrabold m-0" style={{ fontSize: '1.4rem', letterSpacing: '-0.02em' }}>{parsedMasterResume.fullName}</h3>
-                  <span className="uppercase font-bold tracking-widest mt-1.5" style={{ fontSize: '10px', color: 'var(--brand-600)', background: 'var(--brand-50)', padding: '4px 12px', borderRadius: '100px', display: 'inline-block' }}>Verified Profile Active</span>
+                  <span className="uppercase font-bold tracking-widest mt-1.5" style={{ fontSize: '10px', color: 'var(--brand-600)', background: 'var(--brand-50)', padding: '4px 12px', borderRadius: '100px', display: 'inline-block' }}>VERIFIED PROFILE ACTIVE</span>
                 </div>
 
                 <button onClick={handleScrapeAndOptimize} disabled={isProcessing} className="btn-primary w-full" style={{ padding: '1.5rem' }}>
@@ -229,14 +227,18 @@ const ExtensionUI: React.FC = () => {
                 </button>
               </div>
 
+              {/* Skills/Experience Cards - Fixed alignment to left */}
               <div className="flex gap-4">
-                <div className="card p-5 flex-1" style={{ background: 'white' }}>
-                  <span className="uppercase font-bold text-muted" style={{ fontSize: '0.65rem', letterSpacing: '0.05em' }}>SKILLS FOUND</span>
-                  <p className="font-extrabold m-0 mt-1" style={{ fontSize: '1.5rem', color: 'var(--brand-600)' }}>{parsedMasterResume.skills?.length || 0}</p>
+                <div className="card p-6 flex-1 flex flex-col items-start bg-white shadow-sm border-slate-100">
+                  <span className="uppercase font-bold text-muted" style={{ fontSize: '0.65rem', letterSpacing: '0.08em', marginBottom: '12px' }}>SKILLS FOUND</span>
+                  <p className="font-extrabold m-0" style={{ fontSize: '2.5rem', color: 'var(--brand-600)', lineHeight: '1' }}>{parsedMasterResume.skills?.length || 0}</p>
                 </div>
-                <div className="card p-5 flex-1" style={{ background: 'white' }}>
-                  <span className="uppercase font-bold text-muted" style={{ fontSize: '0.65rem', letterSpacing: '0.05em' }}>EXPERIENCE</span>
-                  <p className="font-extrabold m-0 mt-1" style={{ fontSize: '1.5rem', color: 'var(--brand-600)' }}>{parsedMasterResume.experience?.length || 0} <span style={{ fontSize: '0.8rem', opacity: 0.6 }}>ROLES</span></p>
+                <div className="card p-6 flex-1 flex flex-col items-start bg-white shadow-sm border-slate-100">
+                  <span className="uppercase font-bold text-muted" style={{ fontSize: '0.65rem', letterSpacing: '0.08em', marginBottom: '12px' }}>EXPERIENCE</span>
+                  <div className="flex items-baseline gap-2">
+                    <p className="font-extrabold m-0" style={{ fontSize: '2.5rem', color: 'var(--brand-600)', lineHeight: '1' }}>{parsedMasterResume.experience?.length || 0}</p>
+                    <span className="font-bold text-muted" style={{ fontSize: '0.75rem' }}>ROLES</span>
+                  </div>
                 </div>
               </div>
             </div>
@@ -284,7 +286,7 @@ const ExtensionUI: React.FC = () => {
 
           {/* Completed Results */}
           {appState === AppState.COMPLETED && optimizationResult && editableResume && (
-            <div className="animate-slide-up flex flex-col gap-8 pb-32">
+            <div className="animate-slide-up flex flex-col gap-8 pb-10">
               <div className="score-display">
                 <div className="flex justify-between items-center relative z-10">
                   <div>
@@ -302,7 +304,7 @@ const ExtensionUI: React.FC = () => {
                 </div>
               </div>
 
-              {/* Template Selection - VERY PROMINENT */}
+              {/* Template Selection */}
               <div className="flex flex-col gap-4">
                 <div className="flex items-center justify-between px-1">
                   <p className="uppercase font-bold tracking-widest text-muted m-0" style={{ fontSize: '11px' }}>VISUAL RESUME STYLE</p>
@@ -324,13 +326,14 @@ const ExtensionUI: React.FC = () => {
                         display: 'flex',
                         flexDirection: 'column',
                         alignItems: 'center',
+                        justifyContent: 'center',
                         gap: '8px',
                         minWidth: '120px',
                         transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)'
                       }}
                      >
-                       <span style={{ fontSize: '0.9rem', fontWeight: 800, color: selectedTemplate === tid ? 'var(--brand-600)' : 'var(--text-main)' }}>{TEMPLATES[tid].name.split(' ')[0]}</span>
-                       <div style={{ width: '20px', height: '20px', borderRadius: '50%', background: selectedTemplate === tid ? 'var(--brand-600)' : 'var(--border)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                       <span style={{ fontSize: '0.95rem', fontWeight: 800, color: selectedTemplate === tid ? 'var(--brand-600)' : 'var(--text-main)' }}>{TEMPLATES[tid].name.split(' ')[0]}</span>
+                       <div style={{ width: '22px', height: '22px', borderRadius: '50%', background: selectedTemplate === tid ? 'var(--brand-600)' : 'var(--brand-50)', display: 'flex', alignItems: 'center', justifyContent: 'center', border: selectedTemplate === tid ? 'none' : '1px solid var(--border)' }}>
                          {selectedTemplate === tid ? <Check size={12} color="white" strokeWidth={3} /> : null}
                        </div>
                      </button>
@@ -345,7 +348,7 @@ const ExtensionUI: React.FC = () => {
               </div>
 
               {activeTab === 'resume' && (
-                <div className="card p-8 flex flex-col gap-6 animate-slide-up">
+                <div className="card p-8 flex flex-col gap-6 animate-slide-up bg-white">
                   <div className="flex items-center gap-3 pb-5" style={{ borderBottom: '1px solid var(--border)' }}>
                     <div style={{ width: '36px', height: '36px', borderRadius: '12px', background: 'var(--brand-50)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                       <FileEdit size={18} color="var(--brand-600)" />
@@ -372,7 +375,7 @@ const ExtensionUI: React.FC = () => {
               )}
 
               {activeTab === 'cover' && (
-                <div className="card p-8 animate-slide-up">
+                <div className="card p-8 animate-slide-up bg-white">
                   <div className="flex justify-between items-center mb-8">
                     <div className="flex items-center gap-4">
                       <div style={{ width: '36px', height: '36px', borderRadius: '12px', background: 'var(--brand-50)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -404,32 +407,60 @@ const ExtensionUI: React.FC = () => {
             </div>
           )}
         </div>
-      </div>
+      </main>
 
-      {/* Footer Actions - ALWAYS VISIBLE ON TOP IN COMPLETED STATE */}
+      {/* Footer - Fixed Position (NOT ABSOLUTE) within the flex container */}
       {appState === AppState.COMPLETED && (
-        <div style={{ padding: '1.5rem 1.5rem 2rem 1.5rem', background: 'rgba(255,255,255,0.95)', backdropFilter: 'blur(16px)', borderTop: '1px solid var(--border)', display: 'flex', gap: '1rem', zIndex: 200, boxShadow: '0 -10px 25px rgba(0,0,0,0.05)' }}>
-          <button onClick={() => setAppState(AppState.PROFILE)} style={{ width: '64px', height: '64px', background: 'white', border: '1px solid var(--border)', borderRadius: '1.25rem', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', transition: 'all 0.2s' }} className="hover:bg-slate-50">
-            <RefreshCcw size={26} color="var(--text-muted)" />
-          </button>
-          <button 
-            onClick={async () => {
-              if (!editableResume) return;
-              const blob = await docxGenerator.generate(editableResume, selectedTemplate);
-              const url = URL.createObjectURL(blob);
-              const a = document.createElement('a');
-              a.href = url; a.download = `Optimized_${selectedTemplate}_Resume.docx`;
-              a.click();
-            }}
-            className="btn-primary" style={{ flex: 1, height: '64px', borderRadius: '1.25rem' }}
-          >
-            <Download size={22} />
-            <div className="flex flex-col items-start gap-0">
-               <span className="uppercase tracking-widest font-extrabold" style={{ fontSize: '0.75rem' }}>EXPORT RESUME</span>
-               <span style={{ fontSize: '0.65rem', opacity: 0.8, fontWeight: 700 }}>STYLE: {TEMPLATES[selectedTemplate].name.toUpperCase()}</span>
-            </div>
-          </button>
-        </div>
+        <footer className="flex-none p-4 pb-8 bg-white border-t border-slate-200 z-[1000] shadow-[0_-10px_30px_rgba(0,0,0,0.05)]">
+          <div className="flex gap-4">
+            <button 
+              onClick={() => setAppState(AppState.PROFILE)} 
+              style={{ 
+                width: '64px', 
+                height: '64px', 
+                background: 'white', 
+                border: '1px solid var(--border)', 
+                borderRadius: '1.25rem', 
+                display: 'flex', 
+                alignItems: 'center', 
+                justifyContent: 'center', 
+                cursor: 'pointer', 
+                transition: 'all 0.2s',
+                boxShadow: '0 4px 12px rgba(0,0,0,0.04)'
+              }} 
+              className="hover:bg-slate-50 active:scale-95"
+            >
+              <RefreshCcw size={28} color="var(--text-muted)" />
+            </button>
+            <button 
+              onClick={async () => {
+                if (!editableResume) return;
+                setIsProcessing(true);
+                try {
+                  const blob = await docxGenerator.generate(editableResume, selectedTemplate);
+                  const url = URL.createObjectURL(blob);
+                  const a = document.createElement('a');
+                  a.href = url; a.download = `Tailored_${selectedTemplate}_Resume.docx`;
+                  a.click();
+                  URL.revokeObjectURL(url);
+                } finally {
+                  setIsProcessing(false);
+                }
+              }}
+              disabled={isProcessing}
+              className="btn-primary" 
+              style={{ flex: 1, height: '64px', borderRadius: '1.25rem' }}
+            >
+              {isProcessing ? <RefreshCcw className="animate-spin" size={24} /> : <Download size={24} />}
+              <div className="flex flex-col items-start gap-0">
+                 <span className="uppercase tracking-widest font-extrabold" style={{ fontSize: '0.8rem' }}>
+                   {isProcessing ? 'GENERATING...' : 'DOWNLOAD RESUME'}
+                 </span>
+                 {!isProcessing && <span style={{ fontSize: '0.65rem', opacity: 0.8, fontWeight: 700 }}>{TEMPLATES[selectedTemplate].name.toUpperCase()} STYLE</span>}
+              </div>
+            </button>
+          </div>
+        </footer>
       )}
     </div>
   );
