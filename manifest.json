@@ -3,6 +3,9 @@
   "name": "ATS Resume Optimizer",
   "version": "1.0",
   "description": "Optimize your resume for ATS systems based on the current job description.",
+  "icons": {
+    "128": "icon.svg"
+  },
   "permissions": [
     "sidePanel",
     "activeTab",
@@ -15,7 +18,8 @@
     "default_path": "index.html"
   },
   "action": {
-    "default_title": "Open ATS Optimizer"
+    "default_title": "Open ATS Optimizer",
+    "default_icon": "icon.svg"
   },
   "background": {
     "service_worker": "background.js",

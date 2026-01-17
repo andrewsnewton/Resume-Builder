@@ -18,6 +18,10 @@ export default defineConfig({
         {
           src: 'metadata.json',
           dest: '.'
+        },
+        {
+          src: 'icon.svg',
+          dest: '.'
         }
       ]
     })

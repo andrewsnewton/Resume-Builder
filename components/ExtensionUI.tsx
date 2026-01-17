@@ -1,15 +1,16 @@
+
 import React, { useState, useMemo, useEffect } from 'react';
 import { 
   Upload, Zap, Download, RefreshCcw, 
   Target, Copy, UserCircle, 
   ChevronRight, CheckCircle2, Layout, FileEdit, BarChart3,
-  Trash2, AlertCircle, Sparkles, FileText
+  Trash2, AlertCircle, Sparkles, FileText, Check, ArrowRight
 } from 'lucide-react';
 // @ts-ignore
 import mammoth from 'mammoth';
-import { ResumeData, OptimizationResult, AppState } from '../types';
+import { ResumeData, OptimizationResult, AppState, TemplateId } from '../types';
 import { ResumeOptimizerService } from '../services/geminiService';
-import { DocxGenerator } from '../services/docxGenerator';
+import { DocxGenerator, TEMPLATES } from '../services/docxGenerator';
 import DiffView from './DiffView';
 
 declare const chrome: any;
@@ -31,6 +32,7 @@ const ExtensionUI: React.FC = () => {
   const [jobDescription, setJobDescription] = useState<string>("");
   const [optimizationResult, setOptimizationResult] = useState<OptimizationResult | null>(null);
   const [editableResume, setEditableResume] = useState<ResumeData | null>(null);
+  const [selectedTemplate, setSelectedTemplate] = useState<TemplateId>('modern');
   const [isProcessing, setIsProcessing] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<'resume' | 'cover' | 'diff'>('resume');
@@ -138,214 +140,294 @@ const ExtensionUI: React.FC = () => {
   };
 
   return (
-    <div className="h-full flex flex-col relative overflow-hidden">
+    <div className="h-full flex flex-col relative overflow-hidden bg-slate-50">
       {/* Header */}
-      <header className="glass p-4 flex justify-between items-center sticky top-0 z-50">
+      <header className="glass p-4 flex justify-between items-center sticky top-0 z-[100]">
         <div className="flex items-center gap-3">
-          <div className="flex items-center justify-center" style={{ width: '40px', height: '40px', background: 'linear-gradient(135deg, var(--brand-600), var(--violet-600))', borderRadius: '12px', boxShadow: '0 8px 16px rgba(79, 70, 229, 0.2)' }}>
-            <Zap size={20} color="white" fill="rgba(255,255,255,0.2)" />
+          <div className="flex items-center justify-center" style={{ width: '42px', height: '42px', background: 'linear-gradient(135deg, var(--brand-600), var(--violet-600))', borderRadius: '14px', boxShadow: '0 8px 20px rgba(79, 70, 229, 0.25)' }}>
+            <Zap size={22} color="white" fill="rgba(255,255,255,0.3)" />
           </div>
           <div className="flex flex-col">
-            <h1 className="font-extrabold m-0" style={{ fontSize: '1rem', lineHeight: '1.2' }}>CareerAgent</h1>
-            <div className="flex items-center gap-2">
+            {/* Fix: changed 'tracking' to 'letterSpacing' */}
+            <h1 className="font-extrabold m-0" style={{ fontSize: '1.1rem', lineHeight: '1.1', letterSpacing: '-0.02em' }}>CareerAgent</h1>
+            <div className="flex items-center gap-2 mt-0.5">
               <span className="status-dot animate-pulse"></span>
-              <span className="uppercase tracking-widest font-bold" style={{ fontSize: '10px', color: 'var(--brand-600)' }}>ATS Active</span>
+              <span className="uppercase tracking-widest font-bold" style={{ fontSize: '9px', color: 'var(--brand-600)' }}>AI ENGINE READY</span>
             </div>
           </div>
         </div>
         {parsedMasterResume && (
-          <button onClick={() => setAppState(AppState.PROFILE)} style={{ background: 'white', border: '1px solid var(--border)', borderRadius: '12px', padding: '8px', cursor: 'pointer' }}>
-            <UserCircle size={20} color="var(--text-muted)" />
+          <button onClick={() => setAppState(AppState.PROFILE)} style={{ background: 'white', border: '1px solid var(--border)', borderRadius: '12px', padding: '10px', cursor: 'pointer', display: 'flex', boxShadow: '0 2px 4px rgba(0,0,0,0.05)' }}>
+            <UserCircle size={20} color="var(--brand-600)" />
           </button>
         )}
       </header>
 
-      <div className="flex-1 overflow-y-auto custom-scrollbar p-6">
-        {/* Setup Phase */}
-        {appState === AppState.SETUP && (
-          <div className="animate-slide-up flex flex-col gap-8 mt-4">
-            <div className="flex flex-col gap-2">
-              <h2 className="font-extrabold m-0" style={{ fontSize: '1.75rem', lineHeight: '1.2', color: 'var(--text-main)' }}>
-                Elevate your <br/><span style={{ color: 'var(--brand-600)' }}>job hunt.</span>
-              </h2>
-              <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)', fontWeight: 500 }}>Upload your base resume once, tailor it for every role instantly.</p>
-            </div>
-
-            <div className="card p-8 text-center" style={{ borderStyle: 'dashed', background: 'white' }}>
-              <input type="file" id="resume-up" className="absolute" style={{ opacity: 0, cursor: 'pointer', inset: 0 }} onChange={handleFileUpload} accept=".pdf,.docx,.txt" />
-              <div className="flex flex-col items-center gap-4">
-                <div style={{ padding: '20px', borderRadius: '24px', backgroundColor: 'var(--brand-50)' }}>
-                  <Upload size={32} color="var(--brand-600)" />
-                </div>
-                <div>
-                  <h3 className="font-bold m-0" style={{ fontSize: '1rem' }}>Drop Resume Here</h3>
-                  <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '4px' }}>PDF, DOCX, or Text (Max 5MB)</p>
-                </div>
-              </div>
-            </div>
-
-            {isProcessing && (
-              <div className="flex items-center justify-center gap-3 p-4 animate-pulse" style={{ background: 'var(--brand-50)', borderRadius: '1rem', border: '1px solid var(--brand-100)' }}>
-                <RefreshCcw size={16} className="animate-spin" color="var(--brand-600)" />
-                <span className="font-bold uppercase tracking-widest" style={{ fontSize: '0.7rem', color: 'var(--brand-600)' }}>Analyzing Intelligence...</span>
-              </div>
-            )}
-            {error && <div className="p-4" style={{ backgroundColor: '#fef2f2', border: '1px solid #fee2e2', borderRadius: '1rem', color: '#dc2626', fontSize: '0.75rem', fontWeight: 700 }}>{error}</div>}
-          </div>
-        )}
-
-        {/* Profile Phase */}
-        {appState === AppState.PROFILE && parsedMasterResume && (
-          <div className="animate-slide-up flex flex-col gap-6">
-            <div className="card p-8 text-center flex flex-col items-center gap-6 relative overflow-hidden">
-              <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '80px', background: 'linear-gradient(135deg, var(--brand-50), var(--brand-100))', opacity: 0.5 }}></div>
-              <div className="relative" style={{ marginTop: '20px' }}>
-                {/* Fixed the justifyCenter typo to justifyContent */}
-                <div style={{ width: '96px', height: '96px', background: 'linear-gradient(135deg, var(--brand-600), var(--violet-600))', borderRadius: '32px', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 12px 24px rgba(79, 70, 229, 0.3)', transform: 'rotate(6deg)' }}>
-                  <UserCircle size={48} color="white" />
-                </div>
-                <div style={{ position: 'absolute', bottom: '-4px', right: '-4px', background: 'var(--emerald-500)', borderRadius: '12px', padding: '4px', border: '4px solid white' }}>
-                  <CheckCircle2 size={16} color="white" />
-                </div>
-              </div>
-              <div>
-                <h3 className="font-extrabold m-0" style={{ fontSize: '1.25rem' }}>{parsedMasterResume.fullName}</h3>
-                <span className="uppercase font-bold tracking-widest" style={{ fontSize: '10px', color: 'var(--text-muted)', marginTop: '4px', display: 'block' }}>Verified Profile Active</span>
+      {/* Main Content Area - Properly handling scroll */}
+      <div className="flex-1 overflow-y-auto custom-scrollbar relative">
+        <div className="p-6">
+          {/* Setup Phase */}
+          {appState === AppState.SETUP && (
+            <div className="animate-slide-up flex flex-col gap-10 mt-4">
+              <div className="flex flex-col gap-3">
+                <h2 className="font-extrabold m-0" style={{ fontSize: '2.2rem', lineHeight: '1.1', color: 'var(--text-main)', letterSpacing: '-0.04em' }}>
+                  Master the <br/><span style={{ background: 'linear-gradient(135deg, var(--brand-600), var(--violet-600))', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Job Market.</span>
+                </h2>
+                <p style={{ fontSize: '0.9rem', color: 'var(--text-muted)', fontWeight: 500, maxWidth: '85%' }}>Upload your base resume to instantly tailor your profile for every application.</p>
               </div>
 
-              <button onClick={handleScrapeAndOptimize} disabled={isProcessing} className="btn-primary w-full">
-                {isProcessing ? <RefreshCcw className="animate-spin" size={20} /> : <Sparkles size={20} fill="rgba(255,255,255,0.2)" />}
-                {isProcessing ? 'Synchronizing...' : 'Match Current Page'}
-              </button>
-
-              <button onClick={clearProfile} style={{ background: 'transparent', border: 'none', color: 'var(--text-muted)', fontSize: '0.7rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', cursor: 'pointer' }}>
-                <Trash2 size={12} style={{ marginRight: '6px' }} /> Reset Master Data
-              </button>
-            </div>
-
-            <div className="flex gap-4">
-              <div className="card p-4 flex-1">
-                <span className="uppercase font-bold text-muted" style={{ fontSize: '0.6rem' }}>Identified Skills</span>
-                <p className="font-extrabold m-0" style={{ fontSize: '1.25rem', color: 'var(--brand-600)' }}>{parsedMasterResume.skills?.length || 0}</p>
-              </div>
-              <div className="card p-4 flex-1">
-                <span className="uppercase font-bold text-muted" style={{ fontSize: '0.6rem' }}>Experience</span>
-                <p className="font-extrabold m-0" style={{ fontSize: '1.25rem', color: 'var(--brand-600)' }}>{parsedMasterResume.experience?.length || 0} Roles</p>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* Optimizing State */}
-        {appState === AppState.OPTIMIZING && (
-          <div className="py-24 text-center animate-slide-up flex flex-col items-center gap-6">
-            <div className="relative">
-              <div style={{ width: '80px', height: '80px', border: '4px solid var(--brand-100)', borderTopColor: 'var(--brand-600)', borderRadius: '50%' }} className="animate-spin"></div>
-              <Sparkles className="absolute animate-pulse" size={24} color="var(--brand-600)" style={{ top: '50%', left: '50%', transform: 'translate(-50%, -50%)' }} />
-            </div>
-            <div>
-              <h3 className="font-extrabold" style={{ fontSize: '1.1rem' }}>AI Matching Engine</h3>
-              <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>Tailoring your profile for maximum ATS visibility...</p>
-            </div>
-          </div>
-        )}
-
-        {/* Completed Results */}
-        {appState === AppState.COMPLETED && optimizationResult && editableResume && (
-          <div className="animate-slide-up flex flex-col gap-6 pb-24">
-            <div className="score-display">
-              <div className="flex justify-between items-center relative z-10">
-                <div>
-                  <p className="uppercase font-bold tracking-widest m-0" style={{ fontSize: '0.65rem', opacity: 0.8 }}>ATS Match Confidence</p>
-                  <h2 className="font-extrabold m-0" style={{ fontSize: '3rem', letterSpacing: '-2px' }}>{optimizationResult.optimizedScore}%</h2>
-                  <div className="flex items-center gap-2 mt-2">
-                    <span style={{ background: 'rgba(255,255,255,0.2)', padding: '4px 10px', borderRadius: '10px', fontSize: '0.65rem', fontWeight: 800 }}>
-                      +{optimizationResult.optimizedScore - (optimizationResult.originalScore || 0)}% Boost
-                    </span>
+              <div className="card p-10 text-center relative group" style={{ borderStyle: 'dashed', background: 'white', borderWidth: '2px', borderColor: 'var(--brand-200)' }}>
+                <input type="file" id="resume-up" className="absolute" style={{ opacity: 0, cursor: 'pointer', inset: 0, zIndex: 10 }} onChange={handleFileUpload} accept=".pdf,.docx,.txt" />
+                <div className="flex flex-col items-center gap-6">
+                  <div style={{ padding: '24px', borderRadius: '28px', backgroundColor: 'var(--brand-50)', transform: 'scale(1)', transition: 'all 0.3s' }}>
+                    <Upload size={40} color="var(--brand-600)" />
+                  </div>
+                  <div>
+                    <h3 className="font-bold m-0" style={{ fontSize: '1.1rem' }}>Upload Master Resume</h3>
+                    <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginTop: '8px' }}>PDF, DOCX, or Text (Max 5MB)</p>
                   </div>
                 </div>
-                <div style={{ width: '80px', height: '80px', background: 'rgba(255,255,255,0.1)', borderRadius: '24px', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px solid rgba(255,255,255,0.2)', fontSize: '2rem', fontWeight: 900 }}>
-                  A+
+              </div>
+
+              {isProcessing && (
+                <div className="flex items-center justify-center gap-4 p-6 animate-pulse" style={{ background: 'var(--brand-50)', borderRadius: '1.5rem', border: '1px solid var(--brand-100)' }}>
+                  <RefreshCcw size={20} className="animate-spin" color="var(--brand-600)" />
+                  <span className="font-bold uppercase tracking-widest" style={{ fontSize: '0.75rem', color: 'var(--brand-600)' }}>PARSING INTELLIGENCE...</span>
+                </div>
+              )}
+              {error && <div className="p-5" style={{ backgroundColor: '#fff1f2', border: '1px solid #fee2e2', borderRadius: '1.5rem', color: '#e11d48', fontSize: '0.8rem', fontWeight: 700, display: 'flex', gap: '12px', alignItems: 'center' }}>
+                <AlertCircle size={20} /> {error}
+              </div>}
+            </div>
+          )}
+
+          {/* Profile Phase */}
+          {appState === AppState.PROFILE && parsedMasterResume && (
+            <div className="animate-slide-up flex flex-col gap-6">
+              <div className="card p-8 text-center flex flex-col items-center gap-6 relative overflow-hidden">
+                <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '100px', background: 'linear-gradient(135deg, var(--brand-50), var(--brand-100))', opacity: 0.6 }}></div>
+                <div className="relative" style={{ marginTop: '30px' }}>
+                  <div style={{ width: '100px', height: '100px', background: 'linear-gradient(135deg, var(--brand-600), var(--violet-600))', borderRadius: '34px', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 15px 30px rgba(79, 70, 229, 0.35)', transform: 'rotate(6deg)' }}>
+                    <UserCircle size={52} color="white" />
+                  </div>
+                  <div style={{ position: 'absolute', bottom: '-4px', right: '-4px', background: 'var(--emerald-500)', borderRadius: '14px', padding: '5px', border: '4px solid white', boxShadow: '0 4px 10px rgba(0,0,0,0.1)' }}>
+                    <CheckCircle2 size={18} color="white" />
+                  </div>
+                </div>
+                <div>
+                  <h3 className="font-extrabold m-0" style={{ fontSize: '1.4rem', letterSpacing: '-0.02em' }}>{parsedMasterResume.fullName}</h3>
+                  <span className="uppercase font-bold tracking-widest mt-1.5" style={{ fontSize: '10px', color: 'var(--brand-600)', background: 'var(--brand-50)', padding: '4px 12px', borderRadius: '100px', display: 'inline-block' }}>Verified Profile Active</span>
+                </div>
+
+                <button onClick={handleScrapeAndOptimize} disabled={isProcessing} className="btn-primary w-full" style={{ padding: '1.5rem' }}>
+                  {isProcessing ? <RefreshCcw className="animate-spin" size={24} /> : <Sparkles size={24} fill="rgba(255,255,255,0.3)" />}
+                  {isProcessing ? 'SYNCHRONIZING...' : 'MATCH CURRENT PAGE'}
+                </button>
+
+                <button onClick={clearProfile} style={{ background: 'transparent', border: 'none', color: 'var(--text-muted)', fontSize: '0.75rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.12em', cursor: 'pointer', display: 'flex', alignItems: 'center', opacity: 0.6 }}>
+                  <Trash2 size={14} style={{ marginRight: '8px' }} /> RESET MASTER DATA
+                </button>
+              </div>
+
+              <div className="flex gap-4">
+                <div className="card p-5 flex-1" style={{ background: 'white' }}>
+                  <span className="uppercase font-bold text-muted" style={{ fontSize: '0.65rem', letterSpacing: '0.05em' }}>SKILLS FOUND</span>
+                  <p className="font-extrabold m-0 mt-1" style={{ fontSize: '1.5rem', color: 'var(--brand-600)' }}>{parsedMasterResume.skills?.length || 0}</p>
+                </div>
+                <div className="card p-5 flex-1" style={{ background: 'white' }}>
+                  <span className="uppercase font-bold text-muted" style={{ fontSize: '0.65rem', letterSpacing: '0.05em' }}>EXPERIENCE</span>
+                  <p className="font-extrabold m-0 mt-1" style={{ fontSize: '1.5rem', color: 'var(--brand-600)' }}>{parsedMasterResume.experience?.length || 0} <span style={{ fontSize: '0.8rem', opacity: 0.6 }}>ROLES</span></p>
                 </div>
               </div>
             </div>
+          )}
 
-            <div className="flex p-1.5" style={{ background: '#e2e8f0', borderRadius: '1.25rem' }}>
-              <button onClick={() => setActiveTab('resume')} className={`tab-button ${activeTab === 'resume' ? 'active' : ''}`}>Resume</button>
-              <button onClick={() => setActiveTab('cover')} className={`tab-button ${activeTab === 'cover' ? 'active' : ''}`}>Letter</button>
-              <button onClick={() => setActiveTab('diff')} className={`tab-button ${activeTab === 'diff' ? 'active' : ''}`}>Gaps</button>
-            </div>
-
-            {activeTab === 'resume' && (
-              <div className="card p-6 flex flex-col gap-4 animate-slide-up">
-                <div className="flex items-center gap-2 pb-4" style={{ borderBottom: '1px solid var(--border)' }}>
-                  <CheckCircle2 size={18} color="var(--emerald-500)" />
-                  <h4 className="font-extrabold m-0" style={{ fontSize: '0.85rem' }}>Optimized Profile Content</h4>
+          {/* Manual Input Fallback */}
+          {appState === AppState.JOB_INPUT && (
+            <div className="animate-slide-up flex flex-col gap-6">
+              <div className="card p-8 flex flex-col gap-5">
+                <div className="flex items-center gap-4">
+                   <div className="p-4 rounded-2xl bg-indigo-50">
+                     <Layout size={24} color="var(--brand-600)" />
+                   </div>
+                   <div>
+                     <h4 className="font-bold m-0" style={{ fontSize: '1.1rem' }}>Paste Job Description</h4>
+                     <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>We couldn't auto-detect the job details.</p>
+                   </div>
                 </div>
-                <div className="flex flex-col gap-4">
-                  <div style={{ background: 'var(--bg)', padding: '1.25rem', borderRadius: '1rem' }}>
-                    <span className="uppercase font-bold" style={{ fontSize: '0.6rem', color: 'var(--text-muted)' }}>Targeted Summary</span>
-                    <p style={{ fontSize: '0.75rem', lineHeight: '1.6', marginTop: '8px', color: 'var(--text-main)', fontWeight: 500 }}>{editableResume.summary}</p>
+                <textarea 
+                  value={jobDescription}
+                  onChange={e => setJobDescription(e.target.value)}
+                  placeholder="Paste the full job details here for analysis..."
+                  style={{ width: '100%', height: '240px', padding: '1.25rem', border: '1px solid var(--border)', borderRadius: '1.5rem', fontSize: '0.9rem', outline: 'none', resize: 'none', background: 'var(--bg)', color: 'var(--text-main)', lineHeight: '1.6' }}
+                />
+                <button onClick={() => runOptimization(jobDescription)} className="btn-primary" style={{ padding: '1.25rem' }}>
+                  GENERATE OPTIMIZED RESUME <ArrowRight size={18} />
+                </button>
+              </div>
+            </div>
+          )}
+
+          {/* Optimizing State */}
+          {appState === AppState.OPTIMIZING && (
+            <div className="py-24 text-center animate-slide-up flex flex-col items-center gap-8">
+              <div className="relative">
+                <div style={{ width: '100px', height: '100px', border: '5px solid var(--brand-100)', borderTopColor: 'var(--brand-600)', borderRadius: '50%' }} className="animate-spin"></div>
+                <Sparkles className="absolute animate-pulse" size={32} color="var(--brand-600)" style={{ top: '50%', left: '50%', transform: 'translate(-50%, -50%)' }} />
+              </div>
+              <div className="flex flex-col gap-2 px-6">
+                <h3 className="font-extrabold m-0" style={{ fontSize: '1.4rem', letterSpacing: '-0.03em' }}>Tailoring Content...</h3>
+                <p style={{ fontSize: '0.9rem', color: 'var(--text-muted)', lineHeight: '1.5' }}>Our AI agent is matching your skills to the specific job requirements for maximum ATS visibility.</p>
+              </div>
+            </div>
+          )}
+
+          {/* Completed Results */}
+          {appState === AppState.COMPLETED && optimizationResult && editableResume && (
+            <div className="animate-slide-up flex flex-col gap-8 pb-32">
+              <div className="score-display">
+                <div className="flex justify-between items-center relative z-10">
+                  <div>
+                    <p className="uppercase font-bold tracking-widest m-0" style={{ fontSize: '0.7rem', opacity: 0.9 }}>ATS MATCH CONFIDENCE</p>
+                    <h2 className="font-extrabold m-0 mt-1" style={{ fontSize: '3.8rem', letterSpacing: '-4px', lineHeight: '1' }}>{optimizationResult.optimizedScore}%</h2>
+                    <div className="flex items-center gap-2 mt-4">
+                      <span style={{ background: 'rgba(255,255,255,0.25)', padding: '6px 14px', borderRadius: '12px', fontSize: '0.75rem', fontWeight: 800, border: '1px solid rgba(255,255,255,0.2)' }}>
+                        +{optimizationResult.optimizedScore - (optimizationResult.originalScore || 0)}% BOOST APPLIED
+                      </span>
+                    </div>
                   </div>
-                  <div style={{ background: 'var(--brand-50)', padding: '1.25rem', borderRadius: '1rem', border: '1px solid var(--brand-100)' }}>
-                    <span className="uppercase font-bold" style={{ fontSize: '0.6rem', color: 'var(--brand-600)' }}>Critical Gaps Filled</span>
-                    <div className="flex flex-wrap gap-2 mt-3">
-                      {optimizationResult.analysis.keywordGaps.slice(0, 6).map((k, i) => (
-                        <span key={i} style={{ background: 'white', color: 'var(--brand-600)', padding: '4px 10px', borderRadius: '8px', fontSize: '0.65rem', fontWeight: 700, border: '1px solid var(--brand-100)' }}>
-                          {k}
-                        </span>
-                      ))}
+                  <div style={{ width: '85px', height: '85px', background: 'rgba(255,255,255,0.15)', borderRadius: '28px', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '2px solid rgba(255,255,255,0.3)', fontSize: '2.2rem', fontWeight: 900, boxShadow: 'inset 0 2px 10px rgba(0,0,0,0.1)' }}>
+                    A+
+                  </div>
+                </div>
+              </div>
+
+              {/* Template Selection - VERY PROMINENT */}
+              <div className="flex flex-col gap-4">
+                <div className="flex items-center justify-between px-1">
+                  <p className="uppercase font-bold tracking-widest text-muted m-0" style={{ fontSize: '11px' }}>VISUAL RESUME STYLE</p>
+                  <span style={{ fontSize: '11px', color: 'var(--brand-600)', fontWeight: 800 }}>{TEMPLATES[selectedTemplate].name} SELECTED</span>
+                </div>
+                <div className="flex gap-3 overflow-x-auto pb-4 custom-scrollbar">
+                   {(Object.keys(TEMPLATES) as TemplateId[]).map(tid => (
+                     <button 
+                      key={tid} 
+                      onClick={() => setSelectedTemplate(tid)}
+                      style={{ 
+                        flexShrink: 0, 
+                        padding: '16px 20px', 
+                        borderRadius: '1.5rem', 
+                        border: selectedTemplate === tid ? '2px solid var(--brand-600)' : '1px solid var(--border)',
+                        background: selectedTemplate === tid ? 'white' : 'transparent',
+                        boxShadow: selectedTemplate === tid ? '0 10px 20px rgba(79, 70, 229, 0.1)' : 'none',
+                        cursor: 'pointer',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'center',
+                        gap: '8px',
+                        minWidth: '120px',
+                        transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)'
+                      }}
+                     >
+                       <span style={{ fontSize: '0.9rem', fontWeight: 800, color: selectedTemplate === tid ? 'var(--brand-600)' : 'var(--text-main)' }}>{TEMPLATES[tid].name.split(' ')[0]}</span>
+                       <div style={{ width: '20px', height: '20px', borderRadius: '50%', background: selectedTemplate === tid ? 'var(--brand-600)' : 'var(--border)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                         {selectedTemplate === tid ? <Check size={12} color="white" strokeWidth={3} /> : null}
+                       </div>
+                     </button>
+                   ))}
+                </div>
+              </div>
+
+              <div className="flex p-2" style={{ background: 'var(--brand-100)', borderRadius: '1.5rem' }}>
+                <button onClick={() => setActiveTab('resume')} className={`tab-button ${activeTab === 'resume' ? 'active' : ''}`}>RESUME</button>
+                <button onClick={() => setActiveTab('cover')} className={`tab-button ${activeTab === 'cover' ? 'active' : ''}`}>LETTER</button>
+                <button onClick={() => setActiveTab('diff')} className={`tab-button ${activeTab === 'diff' ? 'active' : ''}`}>ANALYSIS</button>
+              </div>
+
+              {activeTab === 'resume' && (
+                <div className="card p-8 flex flex-col gap-6 animate-slide-up">
+                  <div className="flex items-center gap-3 pb-5" style={{ borderBottom: '1px solid var(--border)' }}>
+                    <div style={{ width: '36px', height: '36px', borderRadius: '12px', background: 'var(--brand-50)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                      <FileEdit size={18} color="var(--brand-600)" />
+                    </div>
+                    <h4 className="font-extrabold m-0" style={{ fontSize: '1rem' }}>Optimized Profile Content</h4>
+                  </div>
+                  <div className="flex flex-col gap-5">
+                    <div style={{ background: 'var(--bg)', padding: '1.5rem', borderRadius: '1.5rem', border: '1px solid var(--border)' }}>
+                      <span className="uppercase font-bold" style={{ fontSize: '0.65rem', color: 'var(--text-muted)', letterSpacing: '0.05em' }}>TARGETED SUMMARY</span>
+                      <p style={{ fontSize: '0.85rem', lineHeight: '1.7', marginTop: '12px', color: 'var(--text-main)', fontWeight: 500 }}>{editableResume.summary}</p>
+                    </div>
+                    <div style={{ background: 'white', padding: '1.5rem', borderRadius: '1.5rem', border: '1px solid var(--brand-100)', boxShadow: '0 4px 12px rgba(79, 70, 229, 0.05)' }}>
+                      <span className="uppercase font-bold" style={{ fontSize: '0.65rem', color: 'var(--brand-600)', letterSpacing: '0.05em' }}>KEYWORD INJECTIONS</span>
+                      <div className="flex flex-wrap gap-2.5 mt-4">
+                        {optimizationResult.analysis.keywordGaps.slice(0, 10).map((k, i) => (
+                          <span key={i} style={{ background: 'var(--brand-50)', color: 'var(--brand-600)', padding: '6px 14px', borderRadius: '10px', fontSize: '0.7rem', fontWeight: 800, border: '1px solid var(--brand-100)' }}>
+                            {k}
+                          </span>
+                        ))}
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
-            )}
+              )}
 
-            {activeTab === 'cover' && (
-              <div className="card p-8 animate-slide-up">
-                <div className="flex justify-between items-center mb-6">
-                  <div className="flex items-center gap-2">
-                    <FileText size={18} color="var(--brand-600)" />
-                    <h4 className="font-extrabold m-0" style={{ fontSize: '0.85rem' }}>Cover Letter</h4>
+              {activeTab === 'cover' && (
+                <div className="card p-8 animate-slide-up">
+                  <div className="flex justify-between items-center mb-8">
+                    <div className="flex items-center gap-4">
+                      <div style={{ width: '36px', height: '36px', borderRadius: '12px', background: 'var(--brand-50)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                        <FileText size={18} color="var(--brand-600)" />
+                      </div>
+                      <h4 className="font-extrabold m-0" style={{ fontSize: '1rem' }}>Generated Letter</h4>
+                    </div>
+                    <button onClick={() => navigator.clipboard.writeText(optimizationResult.coverLetter)} style={{ background: 'var(--brand-50)', border: 'none', borderRadius: '14px', padding: '12px', cursor: 'pointer', display: 'flex', transition: 'all 0.2s' }} className="hover:scale-110 active:scale-95">
+                      <Copy size={18} color="var(--brand-600)" />
+                    </button>
                   </div>
-                  <button onClick={() => navigator.clipboard.writeText(optimizationResult.coverLetter)} style={{ background: 'var(--brand-50)', border: 'none', borderRadius: '12px', padding: '10px', cursor: 'pointer' }}>
-                    <Copy size={16} color="var(--brand-600)" />
-                  </button>
+                  <div style={{ fontSize: '0.85rem', lineHeight: '1.9', color: 'var(--text-main)', fontStyle: 'normal', background: 'var(--bg)', padding: '2rem', borderRadius: '1.5rem', border: '1px dashed var(--border)', whiteSpace: 'pre-wrap', fontWeight: 500 }}>
+                    {optimizationResult.coverLetter}
+                  </div>
                 </div>
-                <div style={{ fontSize: '0.75rem', lineHeight: '1.8', color: 'var(--text-main)', fontStyle: 'italic', background: 'var(--bg)', padding: '1.5rem', borderRadius: '1.5rem', border: '1px dashed var(--border)', whiteSpace: 'pre-wrap' }}>
-                  {optimizationResult.coverLetter}
-                </div>
-              </div>
-            )}
+              )}
 
-            {activeTab === 'diff' && (
-               <div className="animate-slide-up flex flex-col" style={{ height: '450px' }}>
-                  <DiffView original={masterResumeRaw} optimized={JSON.stringify(editableResume, null, 2)} />
-               </div>
-            )}
-          </div>
-        )}
+              {activeTab === 'diff' && (
+                 <div className="animate-slide-up flex flex-col gap-4" style={{ minHeight: '500px' }}>
+                    <div className="card p-8 bg-slate-900 text-white">
+                      <h4 className="font-extrabold m-0 mb-2" style={{ fontSize: '1rem' }}>Strategic Changes</h4>
+                      <p style={{ fontSize: '0.8rem', opacity: 0.7 }}>Visual diff highlighting AI enhancements vs your master record.</p>
+                      <div className="mt-6">
+                        <DiffView original={masterResumeRaw} optimized={JSON.stringify(editableResume, null, 2)} />
+                      </div>
+                    </div>
+                 </div>
+              )}
+            </div>
+          )}
+        </div>
       </div>
 
-      {/* Footer Actions */}
+      {/* Footer Actions - ALWAYS VISIBLE ON TOP IN COMPLETED STATE */}
       {appState === AppState.COMPLETED && (
-        <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, padding: '1.5rem', background: 'rgba(255,255,255,0.9)', backdropFilter: 'blur(12px)', borderTop: '1px solid var(--border)', display: 'flex', gap: '1rem' }}>
-          <button onClick={() => setAppState(AppState.PROFILE)} style={{ width: '64px', height: '64px', background: 'white', border: '1px solid var(--border)', borderRadius: '1.25rem', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}>
-            <RefreshCcw size={24} color="var(--text-muted)" />
+        <div style={{ padding: '1.5rem 1.5rem 2rem 1.5rem', background: 'rgba(255,255,255,0.95)', backdropFilter: 'blur(16px)', borderTop: '1px solid var(--border)', display: 'flex', gap: '1rem', zIndex: 200, boxShadow: '0 -10px 25px rgba(0,0,0,0.05)' }}>
+          <button onClick={() => setAppState(AppState.PROFILE)} style={{ width: '64px', height: '64px', background: 'white', border: '1px solid var(--border)', borderRadius: '1.25rem', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', transition: 'all 0.2s' }} className="hover:bg-slate-50">
+            <RefreshCcw size={26} color="var(--text-muted)" />
           </button>
           <button 
             onClick={async () => {
               if (!editableResume) return;
-              const blob = await docxGenerator.generate(editableResume, 'modern');
+              const blob = await docxGenerator.generate(editableResume, selectedTemplate);
               const url = URL.createObjectURL(blob);
               const a = document.createElement('a');
-              a.href = url; a.download = `Tailored_Resume_${Date.now()}.docx`;
+              a.href = url; a.download = `Optimized_${selectedTemplate}_Resume.docx`;
               a.click();
             }}
-            className="btn-primary" style={{ flex: 1, height: '64px' }}
+            className="btn-primary" style={{ flex: 1, height: '64px', borderRadius: '1.25rem' }}
           >
-            <Download size={20} />
-            <span className="uppercase tracking-widest font-extrabold" style={{ fontSize: '0.75rem' }}>Download Result</span>
+            <Download size={22} />
+            <div className="flex flex-col items-start gap-0">
+               <span className="uppercase tracking-widest font-extrabold" style={{ fontSize: '0.75rem' }}>EXPORT RESUME</span>
+               <span style={{ fontSize: '0.65rem', opacity: 0.8, fontWeight: 700 }}>STYLE: {TEMPLATES[selectedTemplate].name.toUpperCase()}</span>
+            </div>
           </button>
         </div>
       )}
