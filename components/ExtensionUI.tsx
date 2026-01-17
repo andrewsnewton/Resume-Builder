@@ -362,7 +362,7 @@ const ExtensionUI: React.FC = () => {
                     </div>
                     <div style={{ background: 'white', padding: '1.5rem', borderRadius: '1.5rem', border: '1px solid var(--brand-100)', boxShadow: '0 4px 12px rgba(79, 70, 229, 0.05)' }}>
                       <span className="uppercase font-bold" style={{ fontSize: '0.65rem', color: 'var(--brand-600)', letterSpacing: '0.05em' }}>KEYWORD INJECTIONS</span>
-                      <div className="flex flex-wrap gap-2.5 mt-4">
+                      <div className="flex gap-2.5 mt-4 overflow-x-auto custom-scrollbar" style={{ paddingBottom: '6px' }}>
                         {optimizationResult.analysis.keywordGaps.slice(0, 10).map((k, i) => (
                           <span key={i} style={{ background: 'var(--brand-50)', color: 'var(--brand-600)', padding: '6px 14px', borderRadius: '10px', fontSize: '0.7rem', fontWeight: 800, border: '1px solid var(--brand-100)' }}>
                             {k}
