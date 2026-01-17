@@ -1,4 +1,3 @@
-
 export interface ResumeData {
   fullName: string;
   email: string;
@@ -25,7 +24,6 @@ export interface MetricBreakdown {
   feedback: string;
 }
 
-// The output from the "Analyst" Agent
 export interface AnalysisResult {
   currentScore: number;
   hardSkillGaps: string[];
@@ -58,10 +56,11 @@ export interface OptimizationResult {
 }
 
 export enum AppState {
-  SETUP = 'SETUP',
-  IDLE = 'IDLE',
-  OPTIMIZING = 'OPTIMIZING',
-  COMPLETED = 'COMPLETED'
+  SETUP = 'SETUP',           // User providing base resume
+  PROFILE = 'PROFILE',       // Resume saved, ready for job input
+  JOB_INPUT = 'JOB_INPUT',   // Manual JD entry if scraping fails
+  OPTIMIZING = 'OPTIMIZING', // AI processing
+  COMPLETED = 'COMPLETED'    // Results ready
 }
 
 export type TemplateId = 'classic' | 'modern' | 'minimalist';
@@ -79,7 +78,7 @@ export interface TemplateConfig {
     sectionHeaderStyle: 'border-bottom' | 'uppercase-bold' | 'shaded';
   };
   colors: {
-    primary: string; // Hex without #
+    primary: string; 
     secondary: string;
     text: string;
   };

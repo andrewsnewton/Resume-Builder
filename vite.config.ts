@@ -4,7 +4,6 @@ import { viteStaticCopy } from 'vite-plugin-static-copy';
 import { resolve, dirname } from 'path';
 import { fileURLToPath } from 'url';
 
-// Fix for __dirname in ESM
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
 export default defineConfig({
@@ -19,11 +18,6 @@ export default defineConfig({
         {
           src: 'metadata.json',
           dest: '.'
-        },
-        {
-          src: 'icon.png', 
-          dest: '.',
-          errorOnExist: false
         }
       ]
     })
@@ -36,16 +30,16 @@ export default defineConfig({
     emptyOutDir: true,
     rollupOptions: {
       input: {
-        // Correcting use of resolve with defined __dirname
         main: resolve(__dirname, 'index.html'),
         background: resolve(__dirname, 'background.ts')
       },
       output: {
         entryFileNames: (chunkInfo) => {
+          // Keep background.js at the root so manifest.json can find it
           return chunkInfo.name === 'background' ? '[name].js' : 'assets/[name]-[hash].js';
         },
-        chunkFileNames: `assets/[name]-[hash].js`,
-        assetFileNames: `assets/[name]-[hash].[ext]`
+        chunkFileNames: 'assets/[name]-[hash].js',
+        assetFileNames: 'assets/[name]-[hash].[ext]'
       }
     }
   }
